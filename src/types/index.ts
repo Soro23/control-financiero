@@ -113,3 +113,45 @@ export interface CategoryBreakdown {
   total: number;
   pct: number;
 }
+
+// ─── Budget ──────────────────────────────────────────────────
+
+export interface BudgetDoc {
+  entries: Record<string, number>; // categoryId → amount
+  updated_at: string;
+}
+
+// ─── Tracking ────────────────────────────────────────────────
+
+export interface TrackingEntry {
+  categoryId: string;
+  categoryName: string;
+  ruleBlock: "needs" | "wants" | "savings" | null;
+  budgeted: number;
+  actual: number;
+  pct: number;
+  status: "good" | "warning" | "over";
+}
+
+// ─── Rule 50/30/20 ───────────────────────────────────────────
+
+export interface RuleBlock {
+  actual: number;
+  ideal: number;
+  pct: number;
+  status: "ok" | "warning" | "over";
+}
+
+export interface RuleBlocks {
+  needs: RuleBlock;
+  wants: RuleBlock;
+  savings: RuleBlock;
+  totalIngresos: number;
+}
+
+// ─── Insights ────────────────────────────────────────────────
+
+export interface Insight {
+  type: "success" | "warning" | "danger";
+  message: string;
+}

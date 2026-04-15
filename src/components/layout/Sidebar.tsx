@@ -8,9 +8,9 @@ const NAV_LINKS = [
   { href: "/dashboard",     icon: "dashboard",               label: "Resumen" },
   { href: "/ingresos",      icon: "payments",                label: "Ingresos" },
   { href: "/gastos",        icon: "receipt_long",            label: "Gastos" },
-  { href: "/presupuesto",   icon: "account_balance_wallet",  label: "Presupuesto",       disabled: true },
-  { href: "/seguimiento",   icon: "monitoring",              label: "Seguimiento mensual", disabled: true },
-  { href: "/objetivos",     icon: "savings",                 label: "Objetivos de ahorro", disabled: true },
+  { href: "/presupuesto",   icon: "account_balance_wallet",  label: "Presupuesto" },
+  { href: "/seguimiento",   icon: "monitoring",              label: "Seguimiento mensual" },
+  { href: "/objetivos",     icon: "savings",                 label: "Objetivos de ahorro" },
   { href: "/configuracion", icon: "settings",                label: "Configuración" },
 ];
 

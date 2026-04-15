@@ -4,13 +4,17 @@ import { useState } from "react";
 import { MonthSelector } from "@/components/shared/MonthSelector";
 import { KPICard } from "@/components/shared/KPICard";
 import { CategoryBadge } from "@/components/shared/CategoryBadge";
+import { Rule503020Mini } from "@/components/dashboard/Rule503020Mini";
 import { useIngresos } from "@/hooks/useIngresos";
 import { useGastos } from "@/hooks/useGastos";
+import { useCategories } from "@/hooks/useCategories";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
 import { calcularKPIs } from "@/lib/calculations/dashboard";
+import { calcularBloques } from "@/lib/calculations/rule503020";
+import { calcularTotalMes } from "@/lib/calculations/ingresos";
 import { formatCurrency, DEFAULT_PREFERENCES } from "@/lib/utils/formatCurrency";
 import { formatDate } from "@/lib/utils/formatDate";
-import type { MonthYear } from "@/types";
+import type { MonthYear, Category } from "@/types";
 
 export default function DashboardPage() {
   const now = new Date();
@@ -28,12 +32,17 @@ export default function DashboardPage() {
   const { entries: gastos, loading: loadingG } = useGastos(period.year, period.month);
   const { entries: ingresosAnterior } = useIngresos(prevMonth.year, prevMonth.month);
   const { entries: gastosAnterior } = useGastos(prevMonth.year, prevMonth.month);
+  const { categories } = useCategories("expense");
   const { preferences } = useUserPreferences();
 
   const prefs = preferences ?? { ...DEFAULT_PREFERENCES, date_format: "DD/MM/YYYY" };
   const loading = loadingI || loadingG;
 
   const kpis = calcularKPIs(ingresos, gastos, ingresosAnterior, gastosAnterior);
+
+  const flatCategories: Category[] = categories.flatMap((c) => [c, ...(c.children ?? [])]);
+  const totalIngresos = calcularTotalMes(ingresos);
+  const ruleBlocks = calcularBloques(totalIngresos, gastos, flatCategories);
 
   // Últimas 5 transacciones combinadas
   const allMovements = [
@@ -122,6 +131,9 @@ export default function DashboardPage() {
           </div>
         </KPICard>
       </div>
+
+      {/* Regla 50/30/20 mini */}
+      {!loading && <Rule503020Mini blocks={ruleBlocks} preferences={preferences} />}
 
       {/* Últimas transacciones */}
       <div className="bg-surface-container-lowest rounded-2xl shadow-[0_2px_12px_rgba(25,28,30,0.06)] overflow-hidden">

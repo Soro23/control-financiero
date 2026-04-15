@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-background": "#191c1e",
+                    "inverse-primary": "#b7c8de",
+                    "on-secondary-fixed": "#002114",
+                    "surface-variant": "#e0e3e5",
+                    "secondary-fixed-dim": "#68dba9",
+                    "surface-container-low": "#f2f4f6",
+                    "on-tertiary-container": "#ff5168",
+                    "on-secondary-fixed-variant": "#005137",
+                    "on-surface-variant": "#44474c",
+                    "primary": "#041627",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#40000c",
+                    "tertiary-fixed": "#ffdada",
+                    "secondary-fixed": "#85f8c4",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface": "#f7f9fb",
+                    "on-primary-fixed": "#0b1d2d",
+                    "on-secondary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-surface": "#191c1e",
+                    "outline-variant": "#c4c6cd",
+                    "surface-tint": "#4f6073",
+                    "tertiary": "#350008",
+                    "on-secondary-container": "#00714e",
+                    "secondary": "#006c4a",
+                    "surface-container": "#eceef0",
+                    "error": "#ba1a1a",
+                    "on-primary-container": "#8192a7",
+                    "outline": "#74777d",
+                    "surface-bright": "#f7f9fb",
+                    "background": "#f7f9fb",
+                    "primary-fixed": "#d2e4fb",
+                    "on-error-container": "#93000a",
+                    "error-container": "#ffdad6",
+                    "tertiary-container": "#5b0015",
+                    "surface-container-high": "#e6e8ea",
+                    "on-tertiary-fixed-variant": "#920028",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb3b6",
+                    "surface-dim": "#d8dadc",
+                    "primary-container": "#1a2b3c",
+                    "primary-fixed-dim": "#b7c8de",
+                    "on-primary-fixed-variant": "#38485a",
+                    "inverse-surface": "#2d3133",
+                    "secondary-container": "#82f5c1"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .balance-text { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- SideNavBar Component -->
+<aside class="fixed left-0 top-0 h-screen w-72 border-r border-slate-200/15 bg-white/85 backdrop-blur-xl flex flex-col py-8 px-6 z-50">
+<div class="mb-10">
+<h1 class="text-2xl font-black text-slate-900 tracking-tight">The Ledger</h1>
+<p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-1">Wealth Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 font-medium hover:bg-slate-100/50 transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Resumen</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-900 font-bold border-r-2 border-slate-900 bg-slate-100/50" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Ingresos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 font-medium hover:bg-slate-100/50 transition-colors" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span>Gastos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 font-medium hover:bg-slate-100/50 transition-colors" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span>Presupuesto</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 font-medium hover:bg-slate-100/50 transition-colors" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span>Seguimiento mensual</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 font-medium hover:bg-slate-100/50 transition-colors" href="#">
+<span class="material-symbols-outlined">savings</span>
+<span>Objetivos de ahorro</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 font-medium hover:bg-slate-100/50 transition-colors" href="#">
+<span class="material-symbols-outlined">pie_chart</span>
+<span>Regla 50/30/20</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 font-medium hover:bg-slate-100/50 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Configuración</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-slate-100">
+<button class="w-full bg-primary text-on-primary py-4 px-6 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/10 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">add</span>
+                Nuevo Movimiento
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-72 min-h-screen">
+<!-- TopNavBar Component -->
+<header class="full-width h-20 sticky top-0 z-40 bg-transparent flex justify-between items-center w-full px-12 max-w-full">
+<div class="flex items-center gap-8">
+<div class="relative">
+<span class="absolute inset-y-0 left-3 flex items-center text-slate-400">
+<span class="material-symbols-outlined text-xl">search</span>
+</span>
+<input class="bg-surface-container-low border-none rounded-full pl-10 pr-6 py-2 text-sm w-80 focus:ring-2 focus:ring-primary/20" placeholder="Buscar movimientos..." type="text"/>
+</div>
+<nav class="flex gap-6 text-sm font-medium tracking-wide">
+<a class="text-slate-900 border-b-2 border-slate-900 pb-1" href="#">Reportes</a>
+<a class="text-slate-500 hover:text-slate-900 transition-colors" href="#">Auditoría</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<button class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-white rounded-lg transition-all">
+<span class="material-symbols-outlined">ios_share</span>
+                    Exportar
+                </button>
+<div class="flex items-center gap-4 border-l border-slate-200 pl-6">
+<button class="text-slate-500 hover:text-slate-900 active:scale-95 transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-slate-200 overflow-hidden ring-2 ring-white">
+<img class="w-full h-full object-cover" data-alt="professional corporate headshot of a financial advisor in a minimalist office setting with soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAq03qXy3R_Z3cTP6qicjHbahKW6c4kTFdQA1B9_tRfNBCHs9q3par4tnTso4VjbqR18HN8H_hs6GR0vjCcgZTq8jnTmsX5zAucXEYXl5sf0oK-88UOzAb_9V4oac0MDCXbWl5n6VdtkMdeShR5eGEWdf80VQ7-cK0jm9psapH8InjzCTzCEIyKVwQNunjc_kLxyISkz1BxFMD4mrtyQ6PSRXEnC_D38OCJHPMVv7ODM6G4XUS3ub21e_RXHzUF9zmvprpFgrVsY8"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="px-12 py-8 space-y-12">
+<!-- Summary Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Balance Card -->
+<div class="bg-surface-container-lowest p-8 rounded-full shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest font-label">Balance Mensual</p>
+<span class="text-secondary material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<h2 class="text-4xl font-extrabold text-slate-900 mb-2 tracking-tight">+ $4,820.50</h2>
+<p class="text-xs text-secondary font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                        12% más que el mes pasado
+                    </p>
+</div>
+<!-- Income Card -->
+<div class="bg-surface-container-lowest p-8 rounded-full shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest font-label">Ingresos Totales</p>
+<span class="text-secondary material-symbols-outlined">arrow_downward</span>
+</div>
+<h2 class="text-4xl font-extrabold text-slate-900 mb-2 tracking-tight">$8,240.00</h2>
+<p class="text-xs text-on-surface-variant font-medium">14 transacciones confirmadas</p>
+</div>
+<!-- Expenses Card -->
+<div class="bg-surface-container-lowest p-8 rounded-full shadow-sm border-b-4 border-error/10">
+<div class="flex justify-between items-start mb-4">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest font-label">Gastos Totales</p>
+<span class="text-error material-symbols-outlined">arrow_upward</span>
+</div>
+<h2 class="text-4xl font-extrabold text-slate-900 mb-2 tracking-tight">$3,419.50</h2>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-4 overflow-hidden">
+<div class="bg-error h-full rounded-full" style="width: 65%;"></div>
+</div>
+<p class="text-[10px] text-on-surface-variant mt-2 font-medium">65% del presupuesto utilizado</p>
+</div>
+</section>
+<!-- Filter & Action Bar -->
+<section class="flex flex-wrap items-center justify-between gap-4 p-6 bg-surface-container-low rounded-xl">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm border border-slate-100">
+<span class="material-symbols-outlined text-slate-400">calendar_today</span>
+<span>Octubre, 2023</span>
+<span class="material-symbols-outlined text-slate-400">expand_more</span>
+</div>
+<div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm border border-slate-100">
+<span class="material-symbols-outlined text-slate-400">category</span>
+<span>Todas las categorías</span>
+<span class="material-symbols-outlined text-slate-400">expand_more</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-surface-container-high px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-200 transition-colors">Limpiar Filtros</button>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-lg text-sm font-bold flex items-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-lg">add</span>
+                        Añadir Movimiento
+                    </button>
+</div>
+</section>
+<!-- Main Data Table Container -->
+<section class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm">
+<div class="px-8 py-6 flex justify-between items-center border-b border-surface-container">
+<h3 class="text-xl font-bold text-slate-900">Historial de Movimientos</h3>
+<div class="flex gap-2">
+<button class="p-2 text-slate-400 hover:text-slate-900 transition-colors"><span class="material-symbols-outlined">filter_list</span></button>
+<button class="p-2 text-slate-400 hover:text-slate-900 transition-colors"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-8 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest">Fecha</th>
+<th class="px-8 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest">Concepto</th>
+<th class="px-8 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest">Categoría</th>
+<th class="px-8 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest text-right">Monto</th>
+<th class="px-8 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest text-center">Estado</th>
+<th class="px-8 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- Table Row 1 -->
+<tr class="group hover:bg-surface-bright transition-colors cursor-pointer">
+<td class="px-8 py-5 text-sm font-medium text-slate-500">24 Oct 2023</td>
+<td class="px-8 py-5 text-sm font-bold text-slate-900">
+<div class="flex flex-col">
+<span>Servicios Digitales AWS</span>
+<span class="text-[10px] text-slate-400 font-medium">Ref: #AWS-99231</span>
+</div>
+</td>
+<td class="px-8 py-5">
+<span class="bg-primary/5 text-primary px-3 py-1 rounded-full text-xs font-bold">Tecnología</span>
+</td>
+<td class="px-8 py-5 text-sm font-extrabold text-right text-error">-$240.00</td>
+<td class="px-8 py-5 text-center">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</td>
+<td class="px-8 py-5 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-400">edit_note</span>
+</td>
+</tr>
+<!-- Table Row 2 -->
+<tr class="group hover:bg-surface-bright transition-colors cursor-pointer">
+<td class="px-8 py-5 text-sm font-medium text-slate-500">23 Oct 2023</td>
+<td class="px-8 py-5 text-sm font-bold text-slate-900">
+<div class="flex flex-col">
+<span>Nómina Octubre</span>
+<span class="text-[10px] text-slate-400 font-medium">Transferencia Recibida</span>
+</div>
+</td>
+<td class="px-8 py-5">
+<span class="bg-secondary/5 text-secondary px-3 py-1 rounded-full text-xs font-bold">Salario</span>
+</td>
+<td class="px-8 py-5 text-sm font-extrabold text-right text-secondary">+$4,500.00</td>
+<td class="px-8 py-5 text-center">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</td>
+<td class="px-8 py-5 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-400">edit_note</span>
+</td>
+</tr>
+<!-- Table Row 3 -->
+<tr class="group hover:bg-surface-bright transition-colors cursor-pointer">
+<td class="px-8 py-5 text-sm font-medium text-slate-500">21 Oct 2023</td>
+<td class="px-8 py-5 text-sm font-bold text-slate-900">
+<div class="flex flex-col">
+<span>Alquiler Loft Studio</span>
+<span class="text-[10px] text-slate-400 font-medium">Pago Automático</span>
+</div>
+</td>
+<td class="px-8 py-5">
+<span class="bg-primary/5 text-primary px-3 py-1 rounded-full text-xs font-bold">Hogar</span>
+</td>
+<td class="px-8 py-5 text-sm font-extrabold text-right text-error">-$1,200.00</td>
+<td class="px-8 py-5 text-center">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</td>
+<td class="px-8 py-5 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-400">edit_note</span>
+</td>
+</tr>
+<!-- Table Row 4 -->
+<tr class="group hover:bg-surface-bright transition-colors cursor-pointer">
+<td class="px-8 py-5 text-sm font-medium text-slate-500">19 Oct 2023</td>
+<td class="px-8 py-5 text-sm font-bold text-slate-900">
+<div class="flex flex-col">
+<span>Suscripción Netflix</span>
+<span class="text-[10px] text-slate-400 font-medium">Tarjeta Debito</span>
+</div>
+</td>
+<td class="px-8 py-5">
+<span class="bg-primary/5 text-primary px-3 py-1 rounded-full text-xs font-bold">Entretenimiento</span>
+</td>
+<td class="px-8 py-5 text-sm font-extrabold text-right text-error">-$15.99</td>
+<td class="px-8 py-5 text-center">
+<span class="material-symbols-outlined text-slate-400 text-lg">schedule</span>
+</td>
+<td class="px-8 py-5 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-400">edit_note</span>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="px-8 py-4 bg-surface-container-low flex justify-between items-center">
+<p class="text-xs font-medium text-slate-500">Mostrando 4 de 128 movimientos</p>
+<div class="flex gap-2">
+<button class="p-1 hover:bg-white rounded transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="p-1 hover:bg-white rounded transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Floating Quick Action Form (Simulation of Add New) -->
+<div class="fixed bottom-12 right-12 w-[380px] bg-white rounded-2xl shadow-2xl border border-slate-100 p-8 z-50">
+<div class="flex justify-between items-center mb-8">
+<h3 class="text-xl font-bold text-slate-900">Nuevo Movimiento</h3>
+<button class="text-slate-400 hover:text-slate-900 transition-colors"><span class="material-symbols-outlined">close</span></button>
+</div>
+<form class="space-y-6">
+<div>
+<label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest font-label mb-2">Concepto</label>
+<input class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="Ej: Supermercado" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest font-label mb-2">Monto</label>
+<input class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="0.00" type="number"/>
+</div>
+<div>
+<label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest font-label mb-2">Tipo</label>
+<div class="flex bg-surface-container-low rounded-lg p-1">
+<button class="flex-1 py-2 text-xs font-bold rounded-md bg-white shadow-sm text-error" type="button">Gasto</button>
+<button class="flex-1 py-2 text-xs font-bold text-slate-500 hover:text-secondary" type="button">Ingreso</button>
+</div>
+</div>
+</div>
+<div>
+<label class="block text-xs font-bold text-on-surface-variant uppercase tracking-widest font-label mb-2">Categoría</label>
+<select class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20">
+<option>Seleccionar...</option>
+<option>Hogar</option>
+<option>Tecnología</option>
+<option>Salud</option>
+<option>Alimentación</option>
+</select>
+</div>
+<button class="w-full bg-primary text-on-primary py-4 rounded-xl font-bold shadow-lg shadow-primary/10 active:scale-95 transition-transform" type="submit">
+                Guardar Movimiento
+            </button>
+</form>
+</div>
+</body></html>

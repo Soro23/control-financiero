@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Seguimiento Mensual - The Architectural Ledger</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-background": "#191c1e",
+                "inverse-primary": "#b7c8de",
+                "on-secondary-fixed": "#002114",
+                "surface-variant": "#e0e3e5",
+                "secondary-fixed-dim": "#68dba9",
+                "surface-container-low": "#f2f4f6",
+                "on-tertiary-container": "#ff5168",
+                "on-secondary-fixed-variant": "#005137",
+                "on-surface-variant": "#44474c",
+                "primary": "#041627",
+                "surface-container-lowest": "#ffffff",
+                "on-tertiary": "#ffffff",
+                "on-tertiary-fixed": "#40000c",
+                "tertiary-fixed": "#ffdada",
+                "secondary-fixed": "#85f8c4",
+                "inverse-on-surface": "#eff1f3",
+                "surface": "#f7f9fb",
+                "on-primary-fixed": "#0b1d2d",
+                "on-secondary": "#ffffff",
+                "on-error": "#ffffff",
+                "surface-container-highest": "#e0e3e5",
+                "on-surface": "#191c1e",
+                "outline-variant": "#c4c6cd",
+                "surface-tint": "#4f6073",
+                "tertiary": "#350008",
+                "on-secondary-container": "#00714e",
+                "secondary": "#006c4a",
+                "surface-container": "#eceef0",
+                "error": "#ba1a1a",
+                "on-primary-container": "#8192a7",
+                "outline": "#74777d",
+                "surface-bright": "#f7f9fb",
+                "background": "#f7f9fb",
+                "primary-fixed": "#d2e4fb",
+                "on-error-container": "#93000a",
+                "error-container": "#ffdad6",
+                "tertiary-container": "#5b0015",
+                "surface-container-high": "#e6e8ea",
+                "on-tertiary-fixed-variant": "#920028",
+                "on-primary": "#ffffff",
+                "tertiary-fixed-dim": "#ffb3b6",
+                "surface-dim": "#d8dadc",
+                "primary-container": "#1a2b3c",
+                "primary-fixed-dim": "#b7c8de",
+                "on-primary-fixed-variant": "#38485a",
+                "inverse-surface": "#2d3133",
+                "secondary-container": "#82f5c1"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "fontFamily": {
+                "headline": ["Manrope"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #041627 0%, #1a2b3c 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed left-0 top-0 h-screen w-72 border-r border-slate-200/15 dark:border-slate-800/15 bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl flex flex-col h-full py-8 px-6 z-50">
+<div class="mb-10">
+<span class="text-2xl font-black text-slate-900 dark:text-white font-headline tracking-tight">The Ledger</span>
+<p class="text-xs font-medium text-slate-500 tracking-widest mt-1">Wealth Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-manrope tracking-tight font-semibold">Resumen</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-manrope tracking-tight font-semibold">Ingresos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-manrope tracking-tight font-semibold">Gastos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-manrope tracking-tight font-semibold">Presupuesto</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-4 py-3 text-slate-900 dark:text-white font-bold border-r-2 border-slate-900 dark:border-white bg-slate-100/50 transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-manrope tracking-tight font-semibold">Seguimiento mensual</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">savings</span>
+<span class="font-manrope tracking-tight font-semibold">Objetivos de ahorro</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">pie_chart</span>
+<span class="font-manrope tracking-tight font-semibold">Regla 50/30/20</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-manrope tracking-tight font-semibold">Configuración</span>
+</a>
+</nav>
+<div class="mt-auto">
+<button class="w-full bg-gradient-primary text-on-primary py-4 px-6 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/10">
+<span class="material-symbols-outlined text-sm">add</span>
+                Nuevo Movimiento
+            </button>
+<div class="mt-8 flex items-center gap-3 px-2">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="professional portrait of a man in his 40s with a clean haircut, wearing a navy sweater, against a soft blurred office background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxA7XMjAmlN2SpF5nDPvUlZ3M4DW0k5pVuIn4SHK7z4otgM5BTINlV7dFa-amftlt1qMQdvWtfBurgpznZ8BghDFs37E6uKvdxLF22Np9WZi3WbxcxpXC4yxWFYGk52-C6D3FXpB-lXfMa5gFn0rXmOgfWu_aYOowWeIWXRJMzqIX96FodGGFN4GY-4VKAYbK9WBWAvhJ7FaUn2g7mqGQtU4nTKNtv0aK4tV-YzEeG3N5Fy6Vq2nVCXO0osI1--hWBV-jEhXYfqQE"/>
+<div>
+<p class="text-sm font-bold text-slate-900">Julián R.</p>
+<p class="text-[10px] text-slate-500 font-medium tracking-wider uppercase">Premium Tier</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-72 min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<header class="full-width h-20 sticky top-0 z-40 bg-transparent flex justify-between items-center w-full px-12 max-w-[calc(100%-0rem)]">
+<div class="flex items-center gap-8">
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-lg">search</span>
+<input class="bg-surface-container-low border-none rounded-full pl-10 pr-6 py-2 text-sm focus:ring-2 focus:ring-primary/20 w-64 transition-all" placeholder="Buscar transacciones..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<a class="text-slate-500 dark:text-slate-400 text-sm font-medium hover:text-slate-900 transition-colors" href="#">Reportes</a>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-medium hover:text-slate-900 transition-colors" href="#">Auditoría</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-surface-container-high text-on-surface px-5 py-2 rounded-xl text-sm font-bold transition-all active:scale-95">Soporte</button>
+<button class="bg-gradient-primary text-on-primary px-6 py-2 rounded-xl text-sm font-bold transition-all shadow-md active:scale-95">Exportar</button>
+<div class="flex items-center gap-1 ml-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="px-12 py-8">
+<div class="flex justify-between items-end mb-12">
+<div>
+<p class="text-label-md font-label uppercase tracking-[0.2em] text-on-primary-container text-xs font-semibold mb-2">Estado de Presupuesto</p>
+<h1 class="text-4xl font-headline font-extrabold text-primary tracking-tight">Seguimiento Mensual</h1>
+</div>
+<div class="bg-surface-container-low px-6 py-3 rounded-full flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400">calendar_today</span>
+<span class="font-headline font-bold text-primary">Octubre 2023</span>
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-primary transition-colors">expand_more</span>
+</div>
+</div>
+<!-- Dashboard Overview Bento -->
+<div class="grid grid-cols-12 gap-6 mb-12">
+<div class="col-span-12 md:col-span-4 bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between">
+<span class="text-xs font-label uppercase tracking-widest text-slate-500 font-bold">Total Previsto</span>
+<div class="mt-4">
+<span class="text-4xl font-headline font-black text-primary">$12,450.00</span>
+<div class="flex items-center gap-2 mt-2 text-secondary text-sm font-semibold">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+4.2% vs Septiembre</span>
+</div>
+</div>
+</div>
+<div class="col-span-12 md:col-span-4 bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between">
+<span class="text-xs font-label uppercase tracking-widest text-slate-500 font-bold">Total Real</span>
+<div class="mt-4">
+<span class="text-4xl font-headline font-black text-primary">$10,124.50</span>
+<div class="flex items-center gap-2 mt-2 text-error text-sm font-semibold">
+<span class="material-symbols-outlined text-sm">trending_down</span>
+<span>-2.1% vs Septiembre</span>
+</div>
+</div>
+</div>
+<div class="col-span-12 md:col-span-4 bg-gradient-primary p-8 rounded-xl flex flex-col justify-between text-white">
+<span class="text-xs font-label uppercase tracking-widest text-on-primary-container font-bold">Diferencia Actual</span>
+<div class="mt-4">
+<span class="text-4xl font-headline font-black">$2,325.50</span>
+<p class="mt-2 text-on-primary-container text-sm font-medium">81% del presupuesto ejecutado</p>
+</div>
+</div>
+</div>
+<!-- Main Comparative Table Section -->
+<div class="bg-surface-container-low p-1 rounded-xl">
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm">
+<div class="grid grid-cols-12 px-8 py-6 border-b border-surface-container text-xs font-label uppercase tracking-widest text-slate-500 font-bold">
+<div class="col-span-4">Categoría</div>
+<div class="col-span-2 text-right">Previsto</div>
+<div class="col-span-2 text-right">Real</div>
+<div class="col-span-3 px-8 text-center">Progreso</div>
+<div class="col-span-1 text-right">Diferencia</div>
+</div>
+<div class="divide-y divide-surface-container">
+<!-- Row 1: Housing (Healthy) -->
+<div class="grid grid-cols-12 px-8 py-8 items-center hover:bg-surface-bright transition-colors group">
+<div class="col-span-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-900">
+<span class="material-symbols-outlined">home</span>
+</div>
+<span class="font-headline font-bold text-primary">Vivienda &amp; Servicios</span>
+</div>
+<div class="col-span-2 text-right font-headline font-bold text-slate-400">$3,200.00</div>
+<div class="col-span-2 text-right font-headline font-bold text-primary">$3,200.00</div>
+<div class="col-span-3 px-8">
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 100%"></div>
+</div>
+<p class="text-[10px] text-center mt-2 font-bold text-secondary">100% UTILIZADO</p>
+</div>
+<div class="col-span-1 text-right font-headline font-bold text-slate-400">$0.00</div>
+</div>
+<!-- Row 2: Food (Yellow) -->
+<div class="grid grid-cols-12 px-8 py-8 items-center hover:bg-surface-bright transition-colors group">
+<div class="col-span-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-900">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<span class="font-headline font-bold text-primary">Alimentación</span>
+</div>
+<div class="col-span-2 text-right font-headline font-bold text-slate-400">$850.00</div>
+<div class="col-span-2 text-right font-headline font-bold text-primary">$720.50</div>
+<div class="col-span-3 px-8">
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 84%"></div>
+</div>
+<p class="text-[10px] text-center mt-2 font-bold text-primary">84% UTILIZADO</p>
+</div>
+<div class="col-span-1 text-right font-headline font-bold text-secondary">+$129.50</div>
+</div>
+<!-- Row 3: Entertainment (Red - Over Budget) -->
+<div class="grid grid-cols-12 px-8 py-8 items-center hover:bg-surface-bright transition-colors group">
+<div class="col-span-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-900">
+<span class="material-symbols-outlined">movie</span>
+</div>
+<span class="font-headline font-bold text-primary">Entretenimiento</span>
+</div>
+<div class="col-span-2 text-right font-headline font-bold text-slate-400">$400.00</div>
+<div class="col-span-2 text-right font-headline font-bold text-primary">$542.00</div>
+<div class="col-span-3 px-8">
+<div class="w-full bg-error-container h-2 rounded-full overflow-hidden">
+<div class="bg-error h-full rounded-full" style="width: 100%"></div>
+</div>
+<p class="text-[10px] text-center mt-2 font-bold text-error">135% SOBRE EL LÍMITE</p>
+</div>
+<div class="col-span-1 text-right font-headline font-bold text-error">-$142.00</div>
+</div>
+<!-- Row 4: Transportation (Green) -->
+<div class="grid grid-cols-12 px-8 py-8 items-center hover:bg-surface-bright transition-colors group">
+<div class="col-span-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-900">
+<span class="material-symbols-outlined">directions_car</span>
+</div>
+<span class="font-headline font-bold text-primary">Transporte</span>
+</div>
+<div class="col-span-2 text-right font-headline font-bold text-slate-400">$600.00</div>
+<div class="col-span-2 text-right font-headline font-bold text-primary">$340.00</div>
+<div class="col-span-3 px-8">
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 56%"></div>
+</div>
+<p class="text-[10px] text-center mt-2 font-bold text-secondary">56% UTILIZADO</p>
+</div>
+<div class="col-span-1 text-right font-headline font-bold text-secondary">+$260.00</div>
+</div>
+<!-- Row 5: Health -->
+<div class="grid grid-cols-12 px-8 py-8 items-center hover:bg-surface-bright transition-colors group">
+<div class="col-span-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-900">
+<span class="material-symbols-outlined">health_and_safety</span>
+</div>
+<span class="font-headline font-bold text-primary">Salud &amp; Seguros</span>
+</div>
+<div class="col-span-2 text-right font-headline font-bold text-slate-400">$1,100.00</div>
+<div class="col-span-2 text-right font-headline font-bold text-primary">$1,080.00</div>
+<div class="col-span-3 px-8">
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 98%"></div>
+</div>
+<p class="text-[10px] text-center mt-2 font-bold text-primary">98% UTILIZADO</p>
+</div>
+<div class="col-span-1 text-right font-headline font-bold text-secondary">+$20.00</div>
+</div>
+</div>
+<!-- Footer Totals -->
+<div class="bg-surface-container-low px-8 py-10">
+<div class="grid grid-cols-12 items-center">
+<div class="col-span-4">
+<h3 class="text-xl font-headline font-black text-primary">TOTAL MENSUAL</h3>
+<p class="text-xs text-slate-500 font-medium mt-1">Consolidado de todas las categorías</p>
+</div>
+<div class="col-span-2 text-right">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Presupuesto</p>
+<span class="text-xl font-headline font-bold text-slate-500">$6,150.00</span>
+</div>
+<div class="col-span-2 text-right">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Gasto Real</p>
+<span class="text-xl font-headline font-black text-primary">$5,882.50</span>
+</div>
+<div class="col-span-3 px-8 flex flex-col items-center">
+<div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
+<div class="bg-gradient-primary h-full rounded-full" style="width: 95%"></div>
+</div>
+<span class="text-[10px] font-bold mt-2 text-primary">95.6% EJECUTADO</span>
+</div>
+<div class="col-span-1 text-right">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Balance</p>
+<span class="text-xl font-headline font-bold text-secondary">+$267.50</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Contextual Insights Section -->
+<div class="mt-12 grid grid-cols-12 gap-8">
+<div class="col-span-12 lg:col-span-7">
+<h3 class="text-xl font-headline font-bold text-primary mb-6">Categorías con Mayor Desviación</h3>
+<div class="space-y-4">
+<div class="bg-surface-container-lowest p-6 rounded-xl flex justify-between items-center">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center text-error">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div>
+<p class="font-headline font-bold text-primary">Entretenimiento</p>
+<p class="text-xs text-slate-500 font-medium">Suscripciones y Cine superaron el límite por $142.00</p>
+</div>
+</div>
+<button class="text-primary text-sm font-bold flex items-center gap-1 hover:underline">
+                                Ajustar
+                                <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl flex justify-between items-center">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div>
+<p class="font-headline font-bold text-primary">Transporte</p>
+<p class="text-xs text-slate-500 font-medium">Ahorro proyectado de $260.00 este mes</p>
+</div>
+</div>
+<button class="text-primary text-sm font-bold flex items-center gap-1 hover:underline">
+                                Transferir a Ahorros
+                                <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-5">
+<div class="bg-primary text-white p-8 rounded-xl relative overflow-hidden h-full">
+<div class="relative z-10">
+<h3 class="text-2xl font-headline font-bold mb-4">Meta de Ahorro Mensual</h3>
+<div class="mb-8">
+<div class="flex justify-between items-end mb-2">
+<span class="text-4xl font-headline font-black">$450.00</span>
+<span class="text-sm font-medium opacity-60">de $500.00</span>
+</div>
+<div class="w-full bg-white/10 h-3 rounded-full overflow-hidden">
+<div class="bg-secondary-fixed h-full rounded-full" style="width: 90%"></div>
+</div>
+</div>
+<p class="text-sm text-slate-400 font-medium leading-relaxed">
+                                Estás a solo <span class="text-secondary-fixed font-bold">$50.00</span> de completar tu meta mensual de ahorro para "Fondo de Emergencia".
+                            </p>
+</div>
+<!-- Background texture simulation -->
+<div class="absolute -right-12 -bottom-12 w-48 h-48 rounded-full bg-secondary-fixed/5 blur-3xl"></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

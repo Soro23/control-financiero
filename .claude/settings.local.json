@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__stitch__list_projects",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --app --src-dir --import-alias \"@/*\" --no-git --yes --force)",
+      "Read(//d/Code/ClaudeWorkspace/**)",
+      "Bash(npx create-next-app@latest cf-temp --typescript --tailwind --app --src-dir --import-alias \"@/*\" --no-git --yes)",
+      "Bash(cp -r D:/Code/ClaudeWorkspace/cf-temp/src D:/Code/ClaudeWorkspace/control-financiero/)",
+      "Bash(cp -r D:/Code/ClaudeWorkspace/cf-temp/public D:/Code/ClaudeWorkspace/control-financiero/)",
+      "Bash(cp -r D:/Code/ClaudeWorkspace/cf-temp/node_modules D:/Code/ClaudeWorkspace/control-financiero/)",
+      "Bash(cp D:/Code/ClaudeWorkspace/cf-temp/package.json D:/Code/ClaudeWorkspace/control-financiero/)",
+      "Bash(cp D:/Code/ClaudeWorkspace/cf-temp/package-lock.json D:/Code/ClaudeWorkspace/control-financiero/)",
+      "Bash(cp D:/Code/ClaudeWorkspace/cf-temp/tsconfig.json D:/Code/ClaudeWorkspace/control-financiero/)",
+      "Bash(cp D:/Code/ClaudeWorkspace/cf-temp/next.config.ts D:/Code/ClaudeWorkspace/control-financiero/)",
+      "Bash(cp D:/Code/ClaudeWorkspace/cf-temp/postcss.config.mjs D:/Code/ClaudeWorkspace/control-financiero/)",
+      "Bash(cp D:/Code/ClaudeWorkspace/cf-temp/eslint.config.mjs D:/Code/ClaudeWorkspace/control-financiero/)",
+      "Bash(cp D:/Code/ClaudeWorkspace/cf-temp/next-env.d.ts D:/Code/ClaudeWorkspace/control-financiero/)",
+      "Bash(npx *)"
+    ]
+  }
+}

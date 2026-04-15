@@ -30,34 +30,8 @@ const CURRENCIES = [
   { code: "COP", symbol: "$", name: "Peso colombiano" },
 ];
 
-function SectionCard({
-  icon,
-  title,
-  description,
-  children,
-  noPadding = false,
-}: {
-  icon: string;
-  title: string;
-  description: string;
-  children: React.ReactNode;
-  noPadding?: boolean;
-}) {
-  return (
-    <div className="bg-surface-container-lowest rounded-2xl shadow-[0_2px_12px_rgba(25,28,30,0.06)] overflow-hidden">
-      <div className="px-6 py-4 border-b border-outline-variant/10 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-surface-container-low flex items-center justify-center shrink-0">
-          <span className="material-symbols-outlined text-on-surface-variant text-[20px]">{icon}</span>
-        </div>
-        <div>
-          <h2 className="text-sm font-bold font-headline text-on-surface">{title}</h2>
-          <p className="text-xs text-on-surface-variant mt-0.5">{description}</p>
-        </div>
-      </div>
-      {noPadding ? children : <div className="p-6">{children}</div>}
-    </div>
-  );
-}
+const CARD = "bg-surface-container-lowest rounded-2xl shadow-[0_2px_12px_rgba(25,28,30,0.06)] overflow-hidden";
+const CARD_BODY = "p-6";
 
 export default function ConfiguracionPage() {
   const { preferences, loading, updatePreferences } = useUserPreferences();
@@ -193,169 +167,170 @@ export default function ConfiguracionPage() {
 
         {/* Tab: Perfil */}
         <TabsContent value="perfil" className="mt-4">
-          <SectionCard icon="person" title="Perfil" description="Nombre y datos de tu cuenta">
-            {loading ? (
-              <div className="flex items-center gap-3 py-4 text-sm text-on-surface-variant">
-                <div className="w-4 h-4 border-2 border-outline-variant/30 border-t-primary rounded-full animate-spin" />
-                Cargando...
-              </div>
-            ) : (
-              <div className="space-y-5">
-                <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                    Nombre
-                  </Label>
-                  <Input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Tu nombre"
-                    className="bg-surface-container-low border-none rounded-xl focus-visible:ring-primary/20"
-                  />
+          <div className={CARD}>
+            <div className={CARD_BODY}>
+              {loading ? (
+                <div className="flex items-center gap-3 py-4 text-sm text-on-surface-variant">
+                  <div className="w-4 h-4 border-2 border-outline-variant/30 border-t-primary rounded-full animate-spin" />
+                  Cargando...
                 </div>
+              ) : (
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                      Nombre
+                    </Label>
+                    <Input
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Tu nombre"
+                      className="bg-surface-container-low border-none rounded-xl focus-visible:ring-primary/20"
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                    Email
-                  </Label>
-                  <Input
-                    value={email}
-                    readOnly
-                    className="bg-surface-container-low border-none rounded-xl opacity-60 cursor-not-allowed"
-                  />
-                  <p className="text-xs text-on-surface-variant">El email no se puede modificar desde aquí</p>
-                </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                      Email
+                    </Label>
+                    <Input
+                      value={email}
+                      readOnly
+                      className="bg-surface-container-low border-none rounded-xl opacity-60 cursor-not-allowed"
+                    />
+                    <p className="text-xs text-on-surface-variant">El email no se puede modificar desde aquí</p>
+                  </div>
 
-                <Button
-                  onClick={handleSaveProfile}
-                  disabled={savingProfile}
-                  className="gradient-primary text-on-primary font-bold font-headline rounded-xl px-6 hover:opacity-90 active:scale-95 transition-all"
-                >
-                  {savingProfile ? "Guardando..." : "Guardar cambios"}
-                </Button>
-
-                <div className="pt-4 border-t border-outline-variant/10">
-                  <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-3">
-                    Sesión
-                  </p>
-                  <button
-                    onClick={handleSignOut}
-                    className="flex items-center gap-2.5 text-sm font-semibold text-error hover:text-error/80 transition-colors"
+                  <Button
+                    onClick={handleSaveProfile}
+                    disabled={savingProfile}
+                    className="gradient-primary text-on-primary font-bold font-headline rounded-xl px-6 hover:opacity-90 active:scale-95 transition-all"
                   >
-                    <span className="material-symbols-outlined text-[18px]">logout</span>
-                    Cerrar sesión
-                  </button>
+                    {savingProfile ? "Guardando..." : "Guardar cambios"}
+                  </Button>
+
+                  <div className="pt-4 border-t border-outline-variant/10">
+                    <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-3">
+                      Sesión
+                    </p>
+                    <button
+                      onClick={handleSignOut}
+                      className="flex items-center gap-2.5 text-sm font-semibold text-error hover:text-error/80 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">logout</span>
+                      Cerrar sesión
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-          </SectionCard>
+              )}
+            </div>
+          </div>
         </TabsContent>
 
         {/* Tab: Moneda */}
         <TabsContent value="moneda" className="mt-4">
-          <SectionCard icon="payments" title="Moneda y formato" description="Configura cómo se muestran los importes">
-            <div className="space-y-5">
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                  Moneda
-                </Label>
-                <Select value={currency} onValueChange={(v) => v && handleCurrencyChange(v)}>
-                  <SelectTrigger className="bg-surface-container-low border-none rounded-xl focus:ring-primary/20">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CURRENCIES.map((c) => (
-                      <SelectItem key={c.code} value={c.code}>
-                        {c.symbol} · {c.name} ({c.code})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-5">
+          <div className={CARD}>
+            <div className={CARD_BODY}>
+              <div className="space-y-5">
                 <div className="space-y-2">
                   <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                    Posición del símbolo
+                    Moneda
                   </Label>
-                  <div className="flex gap-2">
-                    {(["before", "after"] as const).map((pos) => (
-                      <button
-                        key={pos}
-                        type="button"
-                        onClick={() => setSymbolPosition(pos)}
-                        className={`flex-1 py-2.5 rounded-xl text-sm font-semibold font-headline transition-all ${
-                          symbolPosition === pos
-                            ? "gradient-primary text-on-primary"
-                            : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
-                        }`}
-                      >
-                        {pos === "before" ? `${currencySymbol} Antes` : `Después ${currencySymbol}`}
-                      </button>
-                    ))}
+                  <Select value={currency} onValueChange={(v) => v && handleCurrencyChange(v)}>
+                    <SelectTrigger className="bg-surface-container-low border-none rounded-xl focus:ring-primary/20">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CURRENCIES.map((c) => (
+                        <SelectItem key={c.code} value={c.code}>
+                          {c.symbol} · {c.name} ({c.code})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                      Posición del símbolo
+                    </Label>
+                    <div className="flex gap-2">
+                      {(["before", "after"] as const).map((pos) => (
+                        <button
+                          key={pos}
+                          type="button"
+                          onClick={() => setSymbolPosition(pos)}
+                          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold font-headline transition-all ${
+                            symbolPosition === pos
+                              ? "gradient-primary text-on-primary"
+                              : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
+                          }`}
+                        >
+                          {pos === "before" ? `${currencySymbol} Antes` : `Después ${currencySymbol}`}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                      Separador decimal
+                    </Label>
+                    <div className="flex gap-2">
+                      {(["comma", "dot"] as const).map((format) => (
+                        <button
+                          key={format}
+                          type="button"
+                          onClick={() => setDecimalFormat(format)}
+                          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold font-headline transition-all ${
+                            decimalFormat === format
+                              ? "gradient-primary text-on-primary"
+                              : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
+                          }`}
+                        >
+                          {format === "comma" ? "1.234,56" : "1,234.56"}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                    Separador decimal
-                  </Label>
-                  <div className="flex gap-2">
-                    {(["comma", "dot"] as const).map((format) => (
-                      <button
-                        key={format}
-                        type="button"
-                        onClick={() => setDecimalFormat(format)}
-                        className={`flex-1 py-2.5 rounded-xl text-sm font-semibold font-headline transition-all ${
-                          decimalFormat === format
-                            ? "gradient-primary text-on-primary"
-                            : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
-                        }`}
-                      >
-                        {format === "comma" ? "1.234,56" : "1,234.56"}
-                      </button>
-                    ))}
+                <div className="bg-surface-container-low rounded-xl px-5 py-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Vista previa</p>
+                    <p className="text-2xl font-black font-headline text-on-surface mt-1">
+                      {formatCurrency(1234.56, previewPrefs)}
+                    </p>
                   </div>
+                  <span className="material-symbols-outlined text-outline-variant text-[32px]">preview</span>
                 </div>
-              </div>
 
-              <div className="bg-surface-container-low rounded-xl px-5 py-4 flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Vista previa</p>
-                  <p className="text-2xl font-black font-headline text-on-surface mt-1">
-                    {formatCurrency(1234.56, previewPrefs)}
-                  </p>
-                </div>
-                <span className="material-symbols-outlined text-outline-variant text-[32px]">preview</span>
+                <Button
+                  onClick={handleSaveCurrency}
+                  disabled={savingCurrency}
+                  className="w-full gradient-primary text-on-primary font-bold font-headline rounded-xl py-3 hover:opacity-90 active:scale-95 transition-all"
+                >
+                  {savingCurrency ? "Guardando..." : "Guardar preferencias"}
+                </Button>
               </div>
-
-              <Button
-                onClick={handleSaveCurrency}
-                disabled={savingCurrency}
-                className="w-full gradient-primary text-on-primary font-bold font-headline rounded-xl py-3 hover:opacity-90 active:scale-95 transition-all"
-              >
-                {savingCurrency ? "Guardando..." : "Guardar preferencias"}
-              </Button>
             </div>
-          </SectionCard>
+          </div>
         </TabsContent>
 
         {/* Tab: Categorías */}
         <TabsContent value="categorias" className="mt-4">
-          <SectionCard
-            icon="category"
-            title="Categorías"
-            description="Activa o desactiva categorías de gastos e ingresos"
-            noPadding
-          >
+          <div className={CARD}>
             <CategoriesTab />
-          </SectionCard>
+          </div>
         </TabsContent>
 
         {/* Tab: Apariencia */}
         <TabsContent value="apariencia" className="mt-4">
-          <SectionCard icon="palette" title="Apariencia" description="Tema visual de la aplicación">
-            <AppearanceTab />
-          </SectionCard>
+          <div className={CARD}>
+            <div className={CARD_BODY}>
+              <AppearanceTab />
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
 

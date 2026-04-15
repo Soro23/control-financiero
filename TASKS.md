@@ -101,33 +101,32 @@
 
 ## Configuración
 
-**14. Las categorías no cargan**
+**14. ✅ Las categorías no cargan**
 
-- En la página de configuración > pestaña Categorías, el listado no se muestra
-- Revisar la consulta a la colección "categories" de Firebase
-- Verificar que se están trayendo las categorías del usuario actual
+- try/catch/finally en `useCategories.ts` → loading siempre termina
+- Empty state cuando no hay categorías activas
 
-**15. El modo oscuro está mal implementado**
+**15. ✅ El modo oscuro**
 
-- El toggle de dark/light mode no funciona correctamente
-- Los colores no cambian o se ven mal en uno de los modos
-- Revisar la implementación de next-themes y los tokens CSS de dark mode
+- `.dark .sidebar-glass` fondo oscuro en globals.css
+- NavItem, Sidebar, TopNavBar, Dashboard, Configuración: slate hardcoded → tokens de diseño
 
-**16. Mejorar el aspecto visual de configuración**
+**16. ✅ Mejorar el aspecto visual de configuración**
 
-- La página se ve básica o desproporcionada
-- Mejorar spacing, tipografía y layout
-- Organizar las opciones en secciones claras
-- Añadir iconos descriptivos para cada setting
+- Header con icono gradient
+- Tabs con iconos + grid full-width responsive
+- Container ampliado a max-w-3xl
 
 ---
 
 ## General
 
-**17. Revisar el responsive en todas las páginas**
+**17. ✅ Revisar el responsive en todas las páginas**
 
-- Testing completo en móvil (375px), tablet (768px) y desktop (1440px)
-- Revisar: menús, tablas, botones, modales, formularios
-- Asegurar que no hay elementos que se desborden
-- Verificar touch targets en móvil (mínimo 44px)
-- Comprobar que la navegación sea funcional en todas las tamaños
+- `MovementsTable`: overflow-x-auto + columnas ocultas en mobile + acciones siempre visibles en mobile
+- Dashboard: KPI `grid-cols-2 lg:grid-cols-4`, charts `grid-cols-1 lg:grid-cols-5`, tabla con overflow-x-auto
+
+por ordenar
+cuando edito un ingreso o gasto si es recurente, frecuencia no se selecciona automaticamente
+Cuando edito un ingreso o gasto si es recurente, añadir la opcion de ultimo mes.
+Estilizar el boton de Mes actual del MonthSelector

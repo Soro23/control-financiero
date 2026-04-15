@@ -54,19 +54,20 @@ export function MovementsTable({
   return (
     <>
       <div className="bg-surface-container-lowest rounded-2xl shadow-[0_2px_12px_rgba(25,28,30,0.06)] overflow-hidden">
-        <table className="w-full">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[600px]">
           <thead>
             <tr className="border-b border-outline-variant/10">
-              <th className="px-6 py-4 text-left text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Fecha</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Concepto</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Categoría</th>
+              <th className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Fecha</th>
+              <th className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Concepto</th>
+              <th className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-on-surface-variant uppercase tracking-wider hidden sm:table-cell">Categoría</th>
               {type === "expense" && (
-                <th className="px-6 py-4 text-left text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Subcategoría</th>
+                <th className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-on-surface-variant uppercase tracking-wider hidden lg:table-cell">Subcategoría</th>
               )}
-              <th className="px-6 py-4 text-right text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Importe</th>
-              <th className="px-6 py-4 text-right text-xs font-semibold text-on-surface-variant uppercase tracking-wider">% Total</th>
-              <th className="px-6 py-4 text-center text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Estado</th>
-              <th className="px-6 py-4" />
+              <th className="px-3 md:px-6 py-4 text-right text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Importe</th>
+              <th className="px-3 md:px-6 py-4 text-right text-xs font-semibold text-on-surface-variant uppercase tracking-wider hidden md:table-cell">% Total</th>
+              <th className="px-3 md:px-6 py-4 text-center text-xs font-semibold text-on-surface-variant uppercase tracking-wider hidden sm:table-cell">Estado</th>
+              <th className="px-3 md:px-6 py-4" />
             </tr>
           </thead>
           <tbody className="divide-y divide-outline-variant/10">
@@ -76,12 +77,12 @@ export function MovementsTable({
 
               return (
                 <tr key={entry.id} className="hover:bg-surface-container-low/40 transition-colors group">
-                  <td className="px-6 py-4 text-sm text-on-surface-variant whitespace-nowrap">
+                  <td className="px-3 md:px-6 py-4 text-sm text-on-surface-variant whitespace-nowrap">
                     {formatDate(entry.date, prefs.date_format)}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-3 md:px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-slate-900">{entry.concept}</span>
+                      <span className="text-sm font-medium text-on-surface">{entry.concept}</span>
                       {entry.is_recurring && (
                         <span className="material-symbols-outlined text-[14px] text-on-surface-variant" title="Recurrente">repeat</span>
                       )}
@@ -90,7 +91,7 @@ export function MovementsTable({
                       <p className="text-xs text-on-surface-variant mt-0.5 truncate max-w-[200px]">{entry.notes}</p>
                     )}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-3 md:px-6 py-4 hidden sm:table-cell">
                     {entry.category ? (
                       <CategoryBadge categoryName={entry.category.name} type={type} />
                     ) : (
@@ -98,19 +99,19 @@ export function MovementsTable({
                     )}
                   </td>
                   {type === "expense" && (
-                    <td className="px-6 py-4 text-sm text-on-surface-variant">
+                    <td className="px-3 md:px-6 py-4 text-sm text-on-surface-variant hidden lg:table-cell">
                       {expEntry?.subcategory?.name ?? "—"}
                     </td>
                   )}
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-3 md:px-6 py-4 text-right">
                     <span className={`text-sm font-bold font-headline ${type === "income" ? "text-secondary" : "text-error"}`}>
                       {type === "income" ? "+" : "-"}{formatCurrency(entry.amount, prefs)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right text-sm text-on-surface-variant">
+                  <td className="px-3 md:px-6 py-4 text-right text-sm text-on-surface-variant hidden md:table-cell">
                     {pct.toFixed(1)}%
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-3 md:px-6 py-4 text-center hidden sm:table-cell">
                     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${
                       entry.is_recurring
                         ? "bg-primary/10 text-primary"
@@ -119,8 +120,8 @@ export function MovementsTable({
                       {entry.is_recurring ? "Recurrente" : "Puntual"}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <td className="px-3 md:px-6 py-4">
+                    <div className="flex items-center justify-end gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => setEditEntry(entry)}
                         className="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors"
@@ -143,6 +144,7 @@ export function MovementsTable({
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       <ConfirmDialog

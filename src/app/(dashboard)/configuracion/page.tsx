@@ -108,25 +108,34 @@ export default function ConfiguracionPage() {
   };
 
   return (
-    <div className="py-8 max-w-2xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-black font-headline text-slate-900 tracking-tight">Configuración</h1>
-        <p className="text-sm text-on-surface-variant mt-0.5">Personaliza tu cuenta y preferencias</p>
+    <div className="py-8 max-w-3xl">
+      <div className="mb-8 flex items-start gap-4">
+        <div className="w-12 h-12 rounded-2xl gradient-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/15">
+          <span className="material-symbols-outlined text-on-primary text-[22px] fill-icon">settings</span>
+        </div>
+        <div>
+          <h1 className="text-3xl font-black font-headline text-on-surface tracking-tight">Configuración</h1>
+          <p className="text-sm text-on-surface-variant mt-0.5">Personaliza tu cuenta y preferencias</p>
+        </div>
       </div>
 
       <Tabs defaultValue="perfil">
-        <TabsList className="bg-surface-container-low rounded-xl p-1 mb-6">
-          <TabsTrigger value="perfil" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm">
-            Perfil
+        <TabsList className="bg-surface-container-low rounded-xl p-1 mb-6 w-full grid grid-cols-4">
+          <TabsTrigger value="perfil" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[16px]">person</span>
+            <span className="hidden sm:inline">Perfil</span>
           </TabsTrigger>
-          <TabsTrigger value="moneda" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm">
-            Moneda
+          <TabsTrigger value="moneda" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[16px]">payments</span>
+            <span className="hidden sm:inline">Moneda</span>
           </TabsTrigger>
-          <TabsTrigger value="categorias" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm">
-            Categorías
+          <TabsTrigger value="categorias" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[16px]">category</span>
+            <span className="hidden sm:inline">Categorías</span>
           </TabsTrigger>
-          <TabsTrigger value="apariencia" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm">
-            Apariencia
+          <TabsTrigger value="apariencia" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[16px]">palette</span>
+            <span className="hidden sm:inline">Apariencia</span>
           </TabsTrigger>
         </TabsList>
 
@@ -209,7 +218,7 @@ export default function ConfiguracionPage() {
                     className={`flex-1 py-2.5 rounded-xl text-sm font-semibold font-headline transition-all border ${
                       symbolPosition === pos
                         ? "gradient-primary text-on-primary border-transparent"
-                        : "bg-surface-container-low text-slate-600 border-transparent hover:border-outline-variant/30"
+                        : "bg-surface-container-low text-on-surface-variant border-transparent hover:border-outline-variant/30"
                     }`}
                   >
                     {pos === "before" ? `${currencySymbol} Antes` : `Después ${currencySymbol}`}
@@ -229,7 +238,7 @@ export default function ConfiguracionPage() {
                     className={`flex-1 py-2.5 rounded-xl text-sm font-semibold font-headline transition-all border ${
                       decimalFormat === format
                         ? "gradient-primary text-on-primary border-transparent"
-                        : "bg-surface-container-low text-slate-600 border-transparent hover:border-outline-variant/30"
+                        : "bg-surface-container-low text-on-surface-variant border-transparent hover:border-outline-variant/30"
                     }`}
                   >
                     {format === "comma" ? "1.234,56" : "1,234.56"}
@@ -241,7 +250,7 @@ export default function ConfiguracionPage() {
             {/* Preview */}
             <div className="bg-surface-container-low rounded-xl px-5 py-4">
               <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Vista previa</p>
-              <p className="text-xl font-black font-headline text-slate-900">
+              <p className="text-xl font-black font-headline text-on-surface">
                 {formatCurrency(1234.56, previewPrefs)}
               </p>
             </div>

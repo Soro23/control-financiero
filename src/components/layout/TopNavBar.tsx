@@ -87,7 +87,7 @@ export function TopNavBar({ onMenuClick }: TopNavBarProps) {
 
         <div className="h-8 w-px bg-outline-variant/30 mx-2" />
 
-        <button className="p-2 text-slate-500 hover:text-primary transition-colors rounded-lg">
+        <button className="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg">
           <span className="material-symbols-outlined">notifications</span>
         </button>
 

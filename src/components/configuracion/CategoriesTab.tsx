@@ -53,7 +53,7 @@ function CategoryRow({
         )}>
           {category.type === "income" ? "Ingreso" : "Gasto"}
         </span>
-        <span className="text-sm font-medium text-slate-900">{category.name}</span>
+        <span className="text-sm font-medium text-on-surface">{category.name}</span>
         {category.rule_block && (
           <span className="text-xs text-on-surface-variant">· {BLOCK_LABELS[category.rule_block]}</span>
         )}
@@ -118,7 +118,7 @@ export function CategoriesTab() {
             className={cn(
               "flex-1 py-4 text-sm font-bold font-headline transition-colors",
               tab === t
-                ? "text-slate-900 border-b-2 border-slate-900"
+                ? "text-on-surface border-b-2 border-slate-900"
                 : "text-on-surface-variant hover:text-slate-700"
             )}
           >
@@ -130,6 +130,11 @@ export function CategoriesTab() {
       <div className="p-5">
         {loading || !userId ? (
           <p className="text-sm text-center text-on-surface-variant py-8">Cargando categorías...</p>
+        ) : currentList.length === 0 ? (
+          <div className="py-12 text-center">
+            <span className="material-symbols-outlined text-4xl text-outline-variant">category</span>
+            <p className="text-sm text-on-surface-variant mt-2">No hay categorías activas</p>
+          </div>
         ) : (
           <div className="space-y-2">
             {currentList.map((cat) => (

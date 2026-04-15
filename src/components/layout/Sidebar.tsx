@@ -37,14 +37,14 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       )}
       
       <aside className={`
-        fixed top-0 h-screen w-72 sidebar-glass border-r border-slate-200/15 
+        fixed top-0 h-screen w-72 sidebar-glass border-r border-outline-variant/20
         flex flex-col py-8 px-6 z-50 transition-transform duration-300
         lg:translate-x-0 lg:block
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
         {/* Logo */}
         <div className="mb-10">
-          <span className="text-2xl font-black text-slate-900 font-headline tracking-tight">
+          <span className="text-2xl font-black text-on-surface font-headline tracking-tight">
             Control Financiero
           </span>
           <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-on-primary-container mt-1">

@@ -67,16 +67,16 @@ export default function DashboardPage() {
   return (
     <div className="py-8 space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-3xl font-black font-headline text-slate-900 tracking-tight">Resumen</h1>
+          <h1 className="text-3xl font-black font-headline text-on-surface tracking-tight">Resumen</h1>
           <p className="text-sm text-on-surface-variant mt-0.5">Vista general de tus finanzas</p>
         </div>
         <MonthSelector value={period} onChange={setPeriod} />
       </div>
 
       {/* KPI Grid */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           label="Ingresos del mes"
           value={loading ? "—" : formatCurrency(kpis.ingresosMes, prefs)}
@@ -144,11 +144,11 @@ export default function DashboardPage() {
       {!loading && <Rule503020Mini blocks={ruleBlocks} preferences={preferences} />}
 
       {/* Charts row */}
-      <div className="grid grid-cols-5 gap-4">
-        <div className="col-span-3">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <div className="lg:col-span-3">
           <CashFlowChart data={historyData} loading={loadingHistory} preferences={preferences} />
         </div>
-        <div className="col-span-2">
+        <div className="lg:col-span-2">
           <ExpenseDonutChart
             data={categoryBreakdown}
             total={totalGastos}
@@ -161,7 +161,7 @@ export default function DashboardPage() {
       {/* Últimas transacciones */}
       <div className="bg-surface-container-lowest rounded-2xl shadow-[0_2px_12px_rgba(25,28,30,0.06)] overflow-hidden">
         <div className="px-6 py-5 border-b border-outline-variant/10">
-          <h2 className="font-headline font-bold text-slate-900">Últimas transacciones</h2>
+          <h2 className="font-headline font-bold text-on-surface">Últimas transacciones</h2>
           <p className="text-xs text-on-surface-variant mt-0.5">5 movimientos más recientes del mes</p>
         </div>
 
@@ -175,7 +175,8 @@ export default function DashboardPage() {
             <p className="text-sm text-on-surface-variant mt-2">Sin movimientos este mes</p>
           </div>
         ) : (
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[480px]">
             <thead>
               <tr className="text-left">
                 <th className="px-6 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Fecha</th>
@@ -190,7 +191,7 @@ export default function DashboardPage() {
                   <td className="px-6 py-4 text-sm text-on-surface-variant whitespace-nowrap">
                     {formatDate(mov.date, prefs.date_format)}
                   </td>
-                  <td className="px-6 py-4 text-sm font-medium text-slate-900">
+                  <td className="px-6 py-4 text-sm font-medium text-on-surface">
                     {mov.concept}
                   </td>
                   <td className="px-6 py-4">
@@ -217,6 +218,7 @@ export default function DashboardPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

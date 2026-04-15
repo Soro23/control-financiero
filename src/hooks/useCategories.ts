@@ -20,27 +20,33 @@ export function useCategories(type: "income" | "expense") {
     async function fetchCategories() {
       if (!userId) { setLoading(false); return; }
       setLoading(true);
-      const q = query(
-        collection(db, "users", userId, "categories"),
-        where("type", "==", type),
-        where("is_active", "==", true),
-        orderBy("sort_order")
-      );
-      const snap = await getDocs(q);
+      try {
+        const q = query(
+          collection(db, "users", userId, "categories"),
+          where("type", "==", type),
+          where("is_active", "==", true),
+          orderBy("sort_order")
+        );
+        const snap = await getDocs(q);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const all = snap.docs.map((d) => ({ id: d.id, user_id: userId, ...d.data() })) as any[];
-      const parents = all.filter((c) => c.parent_id === null) as CategoryWithChildren[];
-      const children = all.filter((c) => c.parent_id !== null);
-
-      const tree: CategoryWithChildren[] = parents.map((p) => ({
-        ...p,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        children: children.filter((c) => c.parent_id === p.id) as any,
-      }));
+        const all = snap.docs.map((d) => ({ id: d.id, user_id: userId, ...d.data() })) as any[];
+        const parents = all.filter((c) => c.parent_id === null) as CategoryWithChildren[];
+        const children = all.filter((c) => c.parent_id !== null);
 
-      setCategories(tree);
-      setLoading(false);
+        const tree: CategoryWithChildren[] = parents.map((p) => ({
+          ...p,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          children: children.filter((c) => c.parent_id === p.id) as any,
+        }));
+
+        setCategories(tree);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+        setCategories([]);
+      } finally {
+        setLoading(false);
+      }
     }
 
     void fetchCategories();

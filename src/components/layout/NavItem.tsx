@@ -18,7 +18,7 @@ export function NavItem({ href, icon, label, disabled = false, onClick }: NavIte
 
   if (disabled) {
     return (
-      <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 cursor-not-allowed select-none">
+      <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-outline-variant cursor-not-allowed select-none">
         <span className="material-symbols-outlined text-[20px]">{icon}</span>
         <span className="font-headline tracking-tight text-sm">{label}</span>
       </div>
@@ -32,8 +32,8 @@ export function NavItem({ href, icon, label, disabled = false, onClick }: NavIte
       className={cn(
         "flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm",
         isActive
-          ? "text-slate-900 font-bold border-r-2 border-slate-900 bg-slate-100/50"
-          : "text-slate-500 font-medium hover:bg-slate-100/50"
+          ? "text-on-surface font-bold border-r-2 border-on-surface bg-surface-container-high/60"
+          : "text-on-surface-variant font-medium hover:bg-surface-container-high/60"
       )}
     >
       <span

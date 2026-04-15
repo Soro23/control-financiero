@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase/client";
+import { backfillRecurringEntries } from "@/lib/firebase/recurring";
 import type { ExpenseEntry, ExpenseFormData } from "@/types";
 
 function dateRange(year: number, month: number) {
@@ -36,6 +37,10 @@ export function useGastos(year: number, month: number) {
   const fetchEntries = useCallback(async () => {
     if (!userId) { setLoading(false); return; }
     setLoading(true);
+
+    // Backfill any recurring entries that should exist up to today
+    // but were not generated at creation time (e.g. monthly entries).
+    await backfillRecurringEntries(userId, "expense_entries");
 
     const { from, to } = dateRange(year, month);
 

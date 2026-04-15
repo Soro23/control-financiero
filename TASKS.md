@@ -43,18 +43,18 @@
 - Al guardar, crear automáticamente las entradas para meses futuros
 - Estado: ✅ Implementado el selector y creación inicial, ❌ faltan pruebas de verificación
 
-**8. Replicar recurrentes de meses anteriores al cargar**
+**8. ✅ Replicar recurrentes de meses anteriores al cargar**
 
 - Al cargar la página de Ingresos/Gastos, verificar si hay movimientos recurrentes creados en meses anteriores que no se han generado todavía
 - Si existe un movimiento recurrente creado en marzo 2025 y estamos en abril 2026, generar automáticamente las entradas desde la fecha de creación hasta el mes actual
 - Esto aplica al cargar datos, no solo al crear nuevos
 
-**9. Botón "Mes actual" en el selector de meses**
+**9. ✅ Botón "Mes actual" en el selector de meses**
 
 - Añadir un botón de acceso rápido junto al MonthSelector
 - Al hacer clic, vuelve al mes y año actuales
 
-**10. Sistema de auto-actualización de recurrentes (Documentación)**
+**10. ✅ Sistema de auto-actualización de recurrentes (Documentación)**
 
 - Documentar cómo funciona la lógica de recurrentes
 - Verificar que se generan correctamente al crear y al cargar la página

@@ -32,6 +32,10 @@ export function MonthSelector({ value, onChange }: MonthSelectorProps) {
   const now = new Date();
   const isCurrentMonth = value.year === now.getFullYear() && value.month === now.getMonth() + 1;
 
+  function goToToday() {
+    onChange({ month: now.getMonth() + 1, year: now.getFullYear() });
+  }
+
   return (
     <div className="flex items-center gap-2">
       <button
@@ -54,6 +58,16 @@ export function MonthSelector({ value, onChange }: MonthSelectorProps) {
       >
         <span className="material-symbols-outlined text-[20px]">chevron_right</span>
       </button>
+
+      {!isCurrentMonth && (
+        <button
+          onClick={goToToday}
+          className="ml-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors border border-slate-200"
+          aria-label="Ir al mes actual"
+        >
+          Hoy
+        </button>
+      )}
     </div>
   );
 }

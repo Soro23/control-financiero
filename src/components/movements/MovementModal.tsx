@@ -35,6 +35,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { auth, db } from "@/lib/firebase/client";
+import { createForwardRecurringEntries } from "@/lib/firebase/recurring";
 import { todayISO } from "@/lib/utils/formatDate";
 import { cn } from "@/lib/utils";
 import type { Category } from "@/types";
@@ -198,59 +199,6 @@ export function MovementModal({
     }
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function getNextDate(currentDate: string, frequency: string): string {
-    const date = new Date(currentDate);
-    switch (frequency) {
-      case "weekly":
-        date.setDate(date.getDate() + 7);
-        break;
-      case "biweekly":
-        date.setDate(date.getDate() + 14);
-        break;
-      case "monthly":
-        date.setMonth(date.getMonth() + 1);
-        break;
-      case "bimonthly":
-        date.setMonth(date.getMonth() + 2);
-        break;
-      case "quarterly":
-        date.setMonth(date.getMonth() + 3);
-        break;
-      case "yearly":
-        date.setFullYear(date.getFullYear() + 1);
-        break;
-    }
-    return date.toISOString().split("T")[0];
-  }
-
-  async function createRecurringEntries(
-    baseData: Record<string, unknown>,
-    startDate: string,
-    frequency: string | undefined,
-    userId: string,
-    collectionName: string
-  ) {
-    if (!frequency || frequency === "monthly") return;
-    
-    const now = new Date();
-    const maxDate = new Date(now.getFullYear(), now.getMonth() + 3, 1);
-    let currentDate = new Date(startDate);
-    const entries: Record<string, unknown>[] = [];
-    
-    while (currentDate <= maxDate) {
-      if (currentDate > now) break;
-      entries.push({ ...baseData, date: currentDate.toISOString().split("T")[0] });
-      currentDate = new Date(getNextDate(currentDate.toISOString().split("T")[0], frequency));
-    }
-    
-    if (entries.length > 0) {
-      const batch = entries.map(e => 
-        addDoc(collection(db, "users", userId, collectionName), e)
-      );
-      await Promise.all(batch);
-    }
-  }
-
   async function onSubmit(values: MovementFormValues) {
     if (!userId) return;
     setLoading(true);
@@ -282,13 +230,16 @@ export function MovementModal({
           date: values.date,
         });
         
+        // Pre-generate all past occurrences from startDate → today.
+        // Future months and any gaps are covered by backfillRecurringEntries
+        // which runs automatically on each page load.
         if (values.is_recurring && values.recurrence_frequency) {
-          await createRecurringEntries(
-            baseData,
+          await createForwardRecurringEntries(
+            { ...baseData, date: values.date },
             values.date,
             values.recurrence_frequency,
             userId,
-            collectionName
+            collectionName as "income_entries" | "expense_entries"
           );
         }
         

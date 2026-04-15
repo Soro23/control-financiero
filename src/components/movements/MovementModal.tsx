@@ -380,7 +380,8 @@ export function MovementModal({
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Categoría</Label>
             <Select
-              value={watch("category_id")}
+              key={type}
+              value={watch("category_id") || undefined}
               onValueChange={(v) => v && setValue("category_id", v, { shouldValidate: true })}
             >
               <SelectTrigger className="bg-surface-container-low border-none rounded-xl focus:ring-primary/20">

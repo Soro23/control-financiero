@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { MonthSelector } from "@/components/shared/MonthSelector";
 import { KPICard } from "@/components/shared/KPICard";
 import { CategoryBadge } from "@/components/shared/CategoryBadge";
 import { Rule503020Mini } from "@/components/dashboard/Rule503020Mini";
-import { CashFlowChart } from "@/components/dashboard/CashFlowChart";
-import { ExpenseDonutChart } from "@/components/dashboard/ExpenseDonutChart";
 import { useIngresos } from "@/hooks/useIngresos";
 import { useGastos } from "@/hooks/useGastos";
 import { useCategories } from "@/hooks/useCategories";
@@ -19,6 +18,24 @@ import { calcularPorcentajePorCategoria } from "@/lib/calculations/gastos";
 import { formatCurrency, DEFAULT_PREFERENCES } from "@/lib/utils/formatCurrency";
 import { formatDate } from "@/lib/utils/formatDate";
 import type { MonthYear, Category } from "@/types";
+
+const CashFlowChart = dynamic(() => import("@/components/dashboard/CashFlowChart"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-56 animate-pulse bg-surface-container-low rounded-2xl flex items-center justify-center text-sm text-on-surface-variant">
+      Cargando gráfica...
+    </div>
+  ),
+});
+
+const ExpenseDonutChart = dynamic(() => import("@/components/dashboard/ExpenseDonutChart"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-56 animate-pulse bg-surface-container-low rounded-2xl flex items-center justify-center text-sm text-on-surface-variant">
+      Cargando gráfica...
+    </div>
+  ),
+});
 
 export default function DashboardPage() {
   const now = new Date();

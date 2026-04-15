@@ -95,6 +95,45 @@
   --color-destructive: var(--color-error);
 }
 
+/* ─── Dark Mode Token Overrides ──────────────────────────────────────────── */
+.dark {
+  /* Surface hierarchy — dark */
+  --color-surface:                  #0d1117;
+  --color-surface-bright:           #161b22;
+  --color-surface-dim:              #010409;
+  --color-surface-container-lowest: #010409;
+  --color-surface-container-low:    #161b22;
+  --color-surface-container:        #1c2128;
+  --color-surface-container-high:   #21262d;
+  --color-surface-container-highest:#30363d;
+  --color-surface-variant:          #21262d;
+  --color-background:               #0d1117;
+
+  /* Text — dark */
+  --color-on-surface:               #e6edf3;
+  --color-on-surface-variant:       #8b949e;
+  --color-on-background:            #e6edf3;
+
+  /* Borders — dark */
+  --color-outline:                  #30363d;
+  --color-outline-variant:          #21262d;
+
+  /* Primary — stays navy in dark (brand color) */
+  --color-on-primary-container:     #b7c8de;
+
+  /* Secondary — emerald brightens on dark */
+  --color-secondary:                #3ddc84;
+  --color-on-secondary:             #003822;
+
+  /* Error */
+  --color-error:                    #f85149;
+  --color-on-error:                 #67000a;
+
+  /* Inverse */
+  --color-inverse-surface:          #e6edf3;
+  --color-inverse-on-surface:       #1c2128;
+}
+
 /* ─── Material Symbols (self-hosted) ─────────────────────────────────────── */
 @font-face {
   font-family: "Material Symbols Outlined";

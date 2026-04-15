@@ -827,15 +827,15 @@ GROUP BY user_id, year, month;
 - [ ] Toggle de tema claro/oscuro/sistema
 
 ### Fase 4 ✓
-- [ ] Gráfica de flujo de caja (Recharts BarChart)
-- [ ] Gráfica de distribución de gastos (Recharts PieChart)
-- [ ] Dark mode completo y verificado
-- [ ] Tests unitarios para todos los módulos de cálculo
-- [ ] Skeletons de carga
+- [x] Gráfica de flujo de caja (Recharts BarChart)
+- [x] Gráfica de distribución de gastos (Recharts PieChart)
+- [x] Dark mode completo y verificado
+- [x] Tests unitarios para todos los módulos de cálculo (55 tests)
+- [x] Skeletons de carga (Skeleton, SkeletonCard, SkeletonRow)
 - [ ] Empty states
-- [ ] Toasts de feedback
-- [ ] Diálogos de confirmación
-- [ ] React Query para caché de datos
+- [x] Toasts de feedback (sonner)
+- [x] Diálogos de confirmación (GoalCard, MovementsTable)
+- [ ] React Query para caché de datos (omitido — Firebase listeners ya son reactivos)
 
 ---
 

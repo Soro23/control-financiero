@@ -6,6 +6,7 @@ import { CategoryBadge } from "@/components/shared/CategoryBadge";
 import { formatCurrency, DEFAULT_PREFERENCES } from "@/lib/utils/formatCurrency";
 import { formatDate } from "@/lib/utils/formatDate";
 import { MovementModal } from "./MovementModal";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import type { IncomeEntry, ExpenseEntry, UserPreferences } from "@/types";
 
 type PrefsSubset = Pick<UserPreferences, "currency_symbol" | "symbol_position" | "decimal_format" | "date_format">;
@@ -27,6 +28,7 @@ export function MovementsTable({
 }: MovementsTableProps) {
   const [editEntry, setEditEntry] = useState<IncomeEntry | ExpenseEntry | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const prefs = preferences ?? { ...DEFAULT_PREFERENCES, date_format: "DD/MM/YYYY" };
   const total = entries.reduce((sum, e) => sum + e.amount, 0);
@@ -127,7 +129,7 @@ export function MovementsTable({
                         <span className="material-symbols-outlined text-[18px]">edit</span>
                       </button>
                       <button
-                        onClick={() => handleDelete(entry.id)}
+                        onClick={() => setConfirmDeleteId(entry.id)}
                         disabled={deletingId === entry.id}
                         className="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-error/5 transition-colors disabled:opacity-50"
                         title="Eliminar"
@@ -142,6 +144,20 @@ export function MovementsTable({
           </tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        open={!!confirmDeleteId}
+        title="Eliminar movimiento"
+        description="¿Seguro que quieres eliminar este movimiento? Esta acción no se puede deshacer."
+        confirmLabel="Eliminar"
+        destructive
+        onConfirm={async () => {
+          const id = confirmDeleteId!;
+          setConfirmDeleteId(null);
+          await handleDelete(id);
+        }}
+        onCancel={() => setConfirmDeleteId(null)}
+      />
 
       {editEntry && (
         <MovementModal

@@ -5,13 +5,17 @@ import { MonthSelector } from "@/components/shared/MonthSelector";
 import { KPICard } from "@/components/shared/KPICard";
 import { CategoryBadge } from "@/components/shared/CategoryBadge";
 import { Rule503020Mini } from "@/components/dashboard/Rule503020Mini";
+import { CashFlowChart } from "@/components/dashboard/CashFlowChart";
+import { ExpenseDonutChart } from "@/components/dashboard/ExpenseDonutChart";
 import { useIngresos } from "@/hooks/useIngresos";
 import { useGastos } from "@/hooks/useGastos";
 import { useCategories } from "@/hooks/useCategories";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { useMonthlyHistory } from "@/hooks/useMonthlyHistory";
 import { calcularKPIs } from "@/lib/calculations/dashboard";
 import { calcularBloques } from "@/lib/calculations/rule503020";
 import { calcularTotalMes } from "@/lib/calculations/ingresos";
+import { calcularPorcentajePorCategoria } from "@/lib/calculations/gastos";
 import { formatCurrency, DEFAULT_PREFERENCES } from "@/lib/utils/formatCurrency";
 import { formatDate } from "@/lib/utils/formatDate";
 import type { MonthYear, Category } from "@/types";
@@ -43,6 +47,10 @@ export default function DashboardPage() {
   const flatCategories: Category[] = categories.flatMap((c) => [c, ...(c.children ?? [])]);
   const totalIngresos = calcularTotalMes(ingresos);
   const ruleBlocks = calcularBloques(totalIngresos, gastos, flatCategories);
+  const categoryBreakdown = calcularPorcentajePorCategoria(gastos, flatCategories);
+  const totalGastos = calcularTotalMes(gastos);
+
+  const { data: historyData, loading: loadingHistory } = useMonthlyHistory(period);
 
   // Últimas 5 transacciones combinadas
   const allMovements = [
@@ -134,6 +142,21 @@ export default function DashboardPage() {
 
       {/* Regla 50/30/20 mini */}
       {!loading && <Rule503020Mini blocks={ruleBlocks} preferences={preferences} />}
+
+      {/* Charts row */}
+      <div className="grid grid-cols-5 gap-4">
+        <div className="col-span-3">
+          <CashFlowChart data={historyData} loading={loadingHistory} preferences={preferences} />
+        </div>
+        <div className="col-span-2">
+          <ExpenseDonutChart
+            data={categoryBreakdown}
+            total={totalGastos}
+            loading={loading}
+            preferences={preferences}
+          />
+        </div>
+      </div>
 
       {/* Últimas transacciones */}
       <div className="bg-surface-container-lowest rounded-2xl shadow-[0_2px_12px_rgba(25,28,30,0.06)] overflow-hidden">

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ProgressBar } from "@/components/shared/ProgressBar";
 import { GoalContributionModal } from "./GoalContributionModal";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { formatCurrency, DEFAULT_PREFERENCES } from "@/lib/utils/formatCurrency";
 import { calcularGoal } from "@/lib/calculations/objetivos";
 import type { SavingGoal, UserPreferences } from "@/types";
@@ -23,6 +24,7 @@ const COLOR_MAP = {
 
 export function GoalCard({ goal, preferences, onEdit, onDelete, onContribute }: GoalCardProps) {
   const [contributionOpen, setContributionOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const prefs = preferences ?? { ...DEFAULT_PREFERENCES, date_format: "DD/MM/YYYY" };
   const calc = calcularGoal(goal);
   const c = COLOR_MAP[goal.color];
@@ -60,7 +62,7 @@ export function GoalCard({ goal, preferences, onEdit, onDelete, onContribute }: 
               <span className="material-symbols-outlined text-[16px] text-on-surface-variant">edit</span>
             </button>
             <button
-              onClick={() => onDelete(goal.id)}
+              onClick={() => setConfirmDeleteOpen(true)}
               className="w-8 h-8 rounded-lg hover:bg-error/8 flex items-center justify-center transition-colors"
             >
               <span className="material-symbols-outlined text-[16px] text-on-surface-variant hover:text-error">delete</span>
@@ -128,6 +130,16 @@ export function GoalCard({ goal, preferences, onEdit, onDelete, onContribute }: 
           </button>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        title="Eliminar objetivo"
+        description={`¿Seguro que quieres eliminar "${goal.name}"? Esta acción no se puede deshacer.`}
+        confirmLabel="Eliminar"
+        destructive
+        onConfirm={() => { setConfirmDeleteOpen(false); onDelete(goal.id); }}
+        onCancel={() => setConfirmDeleteOpen(false)}
+      />
 
       <GoalContributionModal
         open={contributionOpen}

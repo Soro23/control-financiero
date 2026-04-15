@@ -107,8 +107,8 @@ export default function ConfiguracionPage() {
   const initials = name
     ? name.trim().split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase()
     : email
-    ? email.slice(0, 2).toUpperCase()
-    : "CF";
+      ? email.slice(0, 2).toUpperCase()
+      : "CF";
 
   return (
     <div className="py-8 max-w-2xl space-y-5">
@@ -133,7 +133,7 @@ export default function ConfiguracionPage() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="perfil">
+      <Tabs defaultValue="perfil" className="flex-col">
         <TabsList className="bg-surface-container-low rounded-xl p-1 w-full grid grid-cols-4">
           <TabsTrigger
             value="perfil"
@@ -260,11 +260,10 @@ export default function ConfiguracionPage() {
                           key={pos}
                           type="button"
                           onClick={() => setSymbolPosition(pos)}
-                          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold font-headline transition-all ${
-                            symbolPosition === pos
+                          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold font-headline transition-all ${symbolPosition === pos
                               ? "gradient-primary text-on-primary"
                               : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
-                          }`}
+                            }`}
                         >
                           {pos === "before" ? `${currencySymbol} Antes` : `Después ${currencySymbol}`}
                         </button>
@@ -282,11 +281,10 @@ export default function ConfiguracionPage() {
                           key={format}
                           type="button"
                           onClick={() => setDecimalFormat(format)}
-                          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold font-headline transition-all ${
-                            decimalFormat === format
+                          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold font-headline transition-all ${decimalFormat === format
                               ? "gradient-primary text-on-primary"
                               : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
-                          }`}
+                            }`}
                         >
                           {format === "comma" ? "1.234,56" : "1,234.56"}
                         </button>

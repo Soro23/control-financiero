@@ -26,18 +26,17 @@ export function useUserPreferences() {
   }, []);
 
   useEffect(() => {
-    if (!userId) { setLoading(false); return; }
-
     async function fetchPrefs() {
+      if (!userId) { setLoading(false); return; }
       setLoading(true);
-      const snap = await getDoc(doc(db, "users", userId!, "preferences", "main"));
+      const snap = await getDoc(doc(db, "users", userId, "preferences", "main"));
       if (snap.exists()) {
-        setPreferences({ id: snap.id, user_id: userId!, ...snap.data() } as UserPreferences);
+        setPreferences({ id: snap.id, user_id: userId, ...snap.data() } as UserPreferences);
       }
       setLoading(false);
     }
 
-    fetchPrefs();
+    void fetchPrefs();
   }, [userId]);
 
   async function updatePreferences(data: Partial<UserPreferences>): Promise<boolean> {

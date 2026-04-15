@@ -76,7 +76,10 @@ export function useGastos(year: number, month: number) {
   }, [userId, year, month]);
 
   useEffect(() => {
-    if (userId !== null) fetchEntries();
+    async function load() {
+      if (userId !== null) await fetchEntries();
+    }
+    void load();
   }, [fetchEntries, userId]);
 
   async function createGasto(data: ExpenseFormData): Promise<boolean> {

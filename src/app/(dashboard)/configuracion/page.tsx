@@ -46,12 +46,15 @@ export default function ConfiguracionPage() {
 
   // Inicializar desde preferences
   useEffect(() => {
-    if (!preferences) return;
-    setName(preferences.name ?? "");
-    setCurrency(preferences.currency);
-    setCurrencySymbol(preferences.currency_symbol);
-    setSymbolPosition(preferences.symbol_position);
-    setDecimalFormat(preferences.decimal_format);
+    function syncFromPreferences() {
+      if (!preferences) return;
+      setName(preferences.name ?? "");
+      setCurrency(preferences.currency);
+      setCurrencySymbol(preferences.currency_symbol);
+      setSymbolPosition(preferences.symbol_position);
+      setDecimalFormat(preferences.decimal_format);
+    }
+    syncFromPreferences();
   }, [preferences]);
 
   // Cargar email del usuario

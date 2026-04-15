@@ -17,12 +17,11 @@ export function useCategories(type: "income" | "expense") {
   }, []);
 
   useEffect(() => {
-    if (!userId) { setLoading(false); return; }
-
     async function fetchCategories() {
+      if (!userId) { setLoading(false); return; }
       setLoading(true);
       const q = query(
-        collection(db, "users", userId!, "categories"),
+        collection(db, "users", userId, "categories"),
         where("type", "==", type),
         where("is_active", "==", true),
         orderBy("sort_order")
@@ -30,7 +29,7 @@ export function useCategories(type: "income" | "expense") {
       const snap = await getDocs(q);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const all = snap.docs.map((d) => ({ id: d.id, user_id: userId!, ...d.data() })) as any[];
+      const all = snap.docs.map((d) => ({ id: d.id, user_id: userId, ...d.data() })) as any[];
       const parents = all.filter((c) => c.parent_id === null) as CategoryWithChildren[];
       const children = all.filter((c) => c.parent_id !== null);
 
@@ -44,7 +43,7 @@ export function useCategories(type: "income" | "expense") {
       setLoading(false);
     }
 
-    fetchCategories();
+    void fetchCategories();
   }, [userId, type]);
 
   return { categories, loading };

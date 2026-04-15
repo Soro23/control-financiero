@@ -3,10 +3,15 @@ import {
   getDoc,
   collection,
   writeBatch,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  setDoc,
+  limit,
 } from "firebase/firestore";
 import { db } from "./client";
 
-// Categorías predefinidas (misma estructura que el seed SQL)
 const DEFAULT_INCOME_CATEGORIES = [
   { name: "Salario / Nómina",          sortOrder: 1 },
   { name: "Freelance / Autónomo",      sortOrder: 2 },
@@ -63,20 +68,12 @@ const DEFAULT_EXPENSE_CATEGORIES: {
   },
 ];
 
-/**
- * Inicializa las preferencias y categorías del usuario recién creado.
- * Idempotente: si ya existen, no hace nada.
- */
-export async function initUserData(userId: string, displayName?: string | null) {
-  // Verificar si ya están inicializados
+async function ensurePreferences(userId: string, displayName?: string | null): Promise<boolean> {
   const prefsRef = doc(db, "users", userId, "preferences", "main");
   const prefsSnap = await getDoc(prefsRef);
-  if (prefsSnap.exists()) return;
+  if (prefsSnap.exists()) return false;
 
-  const batch = writeBatch(db);
-
-  // Preferencias por defecto
-  batch.set(prefsRef, {
+  await setDoc(prefsRef, {
     name: displayName ?? null,
     currency: "EUR",
     currency_symbol: "€",
@@ -87,8 +84,20 @@ export async function initUserData(userId: string, displayName?: string | null) 
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   });
+  return true;
+}
 
-  // Categorías de ingresos
+async function ensureCategories(userId: string): Promise<boolean> {
+  const categoriesQuery = query(
+    collection(db, "users", userId, "categories"),
+    where("is_default", "==", true),
+    limit(1)
+  );
+  const existingSnap = await getDocs(categoriesQuery);
+  if (!existingSnap.empty) return false;
+
+  const batch = writeBatch(db);
+
   for (const cat of DEFAULT_INCOME_CATEGORIES) {
     const catRef = doc(collection(db, "users", userId, "categories"));
     batch.set(catRef, {
@@ -103,7 +112,6 @@ export async function initUserData(userId: string, displayName?: string | null) 
     });
   }
 
-  // Categorías de gastos con subcategorías
   for (const cat of DEFAULT_EXPENSE_CATEGORIES) {
     const catRef = doc(collection(db, "users", userId, "categories"));
     batch.set(catRef, {
@@ -116,15 +124,10 @@ export async function initUserData(userId: string, displayName?: string | null) 
       sort_order: cat.sortOrder,
       created_at: new Date().toISOString(),
     });
-
-    // Subcategorías necesitan el ID del padre — hacemos un segundo batch
-    // Los subcats se añaden después del commit inicial
   }
 
   await batch.commit();
 
-  // Segunda pasada: subcategorías (necesitan IDs de padres ya guardados)
-  const { getDocs, query, where, orderBy } = await import("firebase/firestore");
   const catsQuery = query(
     collection(db, "users", userId, "categories"),
     where("type", "==", "expense"),
@@ -157,4 +160,10 @@ export async function initUserData(userId: string, displayName?: string | null) 
   }
 
   await subBatch.commit();
+  return true;
+}
+
+export async function initUserData(userId: string, displayName?: string | null) {
+  await ensurePreferences(userId, displayName);
+  await ensureCategories(userId);
 }

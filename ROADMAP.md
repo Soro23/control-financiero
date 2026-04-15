@@ -13,7 +13,7 @@ Stack: **Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · shadcn/ui �
 |---|---|---|---|
 | 0 | Fundaciones | Setup del proyecto, diseño y base de datos | ✅ Completa |
 | 1 | MVP | Auth + Layout + Ingresos + Gastos + Dashboard básico | ✅ Completa |
-| 2 | Core V2 | Presupuesto + Seguimiento + Regla 50/30/20 | ⬜ Pendiente |
+| 2 | Core V2 | Presupuesto + Seguimiento + Regla 50/30/20 | ✅ Completa |
 | 3 | Core V3 | Objetivos de ahorro + Exportación + Configuración completa | ⬜ Pendiente |
 | 4 | Polish | Gráficas reales + Dark mode + Testing + Optimización | ⬜ Pendiente |
 
@@ -410,7 +410,7 @@ formatCurrency(amount: number, preferences: UserPreferences): string
 
 ---
 
-### 2.1 Presupuesto Mensual
+### ✅ 2.1 Presupuesto Mensual
 
 **Qué hacer:**
 - Pantalla `/presupuesto` con tabla editable de categorías
@@ -441,7 +441,7 @@ getBudgetForMonth(userId: string, year: number, month: number): BudgetEntry[]
 
 ---
 
-### 2.2 Seguimiento Real vs Presupuesto
+### ✅ 2.2 Seguimiento Real vs Presupuesto
 
 **Qué hacer:**
 - Pantalla `/seguimiento` con tabla comparativa previsto vs real
@@ -473,7 +473,7 @@ generateInsights(tracking: TrackingData[]): Insight[]
 
 ---
 
-### 2.3 Regla 50/30/20
+### ✅ 2.3 Regla 50/30/20
 
 **Qué hacer:**
 - Sección inferior de `/objetivos` (se integra en la misma página)
@@ -503,7 +503,7 @@ generarInsightTexto(bloques: RuleBlocks): string
 
 ---
 
-### 2.4 Completar el Dashboard (V2)
+### ✅ 2.4 Completar el Dashboard (V2)
 
 **Qué hacer:**
 - Añadir al dashboard el mini-panel de la Regla 50/30/20

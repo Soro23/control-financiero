@@ -164,6 +164,17 @@ export function MovementsTable({
           open={!!editEntry}
           onOpenChange={(open) => { if (!open) setEditEntry(null); }}
           defaultType={type}
+          defaultEntry={{
+            id: editEntry.id,
+            concept: editEntry.concept,
+            category_id: editEntry.category_id,
+            subcategory_id: type === "expense" ? (editEntry as any).subcategory_id : undefined,
+            amount: editEntry.amount,
+            date: editEntry.date,
+            is_recurring: editEntry.is_recurring,
+            notes: editEntry.notes,
+            type: type,
+          }}
           onSuccess={() => { setEditEntry(null); onRefresh(); }}
         />
       )}

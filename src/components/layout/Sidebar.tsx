@@ -17,6 +17,10 @@ const NAV_LINKS = [
 export function Sidebar() {
   const [modalOpen, setModalOpen] = useState(false);
 
+  const handleMovementSaved = () => {
+    window.dispatchEvent(new CustomEvent("movement-updated"));
+  };
+
   return (
     <>
       <aside className="fixed left-0 top-0 h-screen w-72 sidebar-glass border-r border-slate-200/15 flex flex-col py-8 px-6 z-50">
@@ -53,6 +57,7 @@ export function Sidebar() {
         open={modalOpen}
         onOpenChange={setModalOpen}
         defaultType="expense"
+        onSuccess={handleMovementSaved}
       />
     </>
   );

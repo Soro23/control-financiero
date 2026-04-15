@@ -15,7 +15,11 @@
       "Bash(cp D:/Code/ClaudeWorkspace/cf-temp/postcss.config.mjs D:/Code/ClaudeWorkspace/control-financiero/)",
       "Bash(cp D:/Code/ClaudeWorkspace/cf-temp/eslint.config.mjs D:/Code/ClaudeWorkspace/control-financiero/)",
       "Bash(cp D:/Code/ClaudeWorkspace/cf-temp/next-env.d.ts D:/Code/ClaudeWorkspace/control-financiero/)",
-      "Bash(npx *)"
+      "Bash(npx *)",
+      "Bash"
+    ],
+    "deny": [
+      "Bash(rm -rf *)"
     ]
   }
 }

@@ -11,6 +11,8 @@ import {
   where,
   getDocs,
   addDoc,
+  updateDoc,
+  doc,
   orderBy,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
@@ -59,6 +61,17 @@ interface MovementModalProps {
   onOpenChange: (open: boolean) => void;
   defaultType?: "income" | "expense";
   onSuccess?: () => void;
+  defaultEntry?: {
+    id: string;
+    concept: string;
+    category_id: string;
+    subcategory_id?: string;
+    amount: number;
+    date: string;
+    is_recurring: boolean;
+    notes?: string | null;
+    type: "income" | "expense";
+  };
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -68,12 +81,14 @@ export function MovementModal({
   onOpenChange,
   defaultType = "expense",
   onSuccess,
+  defaultEntry,
 }: MovementModalProps) {
-  const [type, setType] = useState<"income" | "expense">(defaultType);
+  const [type, setType] = useState<"income" | "expense">(defaultEntry?.type ?? defaultType);
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const isEditing = !!defaultEntry;
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => setUserId(u?.uid ?? null));
@@ -121,16 +136,30 @@ export function MovementModal({
     }
 
     loadCategories();
-    reset({
-      concept: "",
-      category_id: "",
-      subcategory_id: "",
-      amount: "",
-      date: todayISO(),
-      is_recurring: false,
-      notes: "",
-    });
-  }, [type, open, userId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Precargar datos si es edición
+    if (defaultEntry) {
+      reset({
+        concept: defaultEntry.concept,
+        category_id: defaultEntry.category_id,
+        subcategory_id: defaultEntry.subcategory_id || "",
+        amount: defaultEntry.amount.toString(),
+        date: defaultEntry.date,
+        is_recurring: defaultEntry.is_recurring,
+        notes: defaultEntry.notes || "",
+      });
+    } else {
+      reset({
+        concept: "",
+        category_id: "",
+        subcategory_id: "",
+        amount: "",
+        date: todayISO(),
+        is_recurring: false,
+        notes: "",
+      });
+    }
+  }, [type, open, userId, defaultEntry]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Cargar subcategorías (solo gastos)
   useEffect(() => {
@@ -171,23 +200,36 @@ export function MovementModal({
     const collectionName = type === "income" ? "income_entries" : "expense_entries";
 
     try {
-      await addDoc(collection(db, "users", userId, collectionName), {
-        concept: values.concept,
-        category_id: values.category_id,
-        ...(type === "expense" && { subcategory_id: values.subcategory_id || null }),
-        amount,
-        date: values.date,
-        is_recurring: values.is_recurring,
-        notes: values.notes || null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
-
-      toast.success(type === "income" ? "Ingreso registrado correctamente" : "Gasto registrado correctamente");
+      if (isEditing && defaultEntry) {
+        await updateDoc(doc(db, "users", userId, collectionName, defaultEntry.id), {
+          concept: values.concept,
+          category_id: values.category_id,
+          ...(type === "expense" && { subcategory_id: values.subcategory_id || null }),
+          amount,
+          date: values.date,
+          is_recurring: values.is_recurring,
+          notes: values.notes || null,
+          updated_at: new Date().toISOString(),
+        });
+        toast.success(type === "income" ? "Ingreso actualizado correctamente" : "Gasto actualizado correctamente");
+      } else {
+        await addDoc(collection(db, "users", userId, collectionName), {
+          concept: values.concept,
+          category_id: values.category_id,
+          ...(type === "expense" && { subcategory_id: values.subcategory_id || null }),
+          amount,
+          date: values.date,
+          is_recurring: values.is_recurring,
+          notes: values.notes || null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+        toast.success(type === "income" ? "Ingreso registrado correctamente" : "Gasto registrado correctamente");
+      }
       onOpenChange(false);
       onSuccess?.();
     } catch {
-      toast.error(`Error al guardar el ${type === "income" ? "ingreso" : "gasto"}`);
+      toast.error(`Error al ${isEditing ? "actualizar" : "guardar"} el ${type === "income" ? "ingreso" : "gasto"}`);
     } finally {
       setLoading(false);
     }
@@ -198,7 +240,7 @@ export function MovementModal({
       <DialogContent className="sm:max-w-md bg-surface-container-lowest border-none shadow-[0_20px_60px_rgba(25,28,30,0.12)] rounded-2xl">
         <DialogHeader>
           <DialogTitle className="font-headline font-black text-xl text-slate-900">
-            Nuevo Movimiento
+            {isEditing ? "Editar Movimiento" : "Nuevo Movimiento"}
           </DialogTitle>
         </DialogHeader>
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { MonthSelector } from "@/components/shared/MonthSelector";
 import { MovementsTable } from "@/components/movements/MovementsTable";
 import { MovementModal } from "@/components/movements/MovementModal";
@@ -18,6 +19,8 @@ export default function IngresosPage() {
     year: now.getFullYear(),
   });
   const [modalOpen, setModalOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search")?.toLowerCase() || "";
 
   const prevMonth = period.month === 1
     ? { month: 12, year: period.year - 1 }
@@ -27,8 +30,23 @@ export default function IngresosPage() {
   const { entries: ingresosAnterior } = useIngresos(prevMonth.year, prevMonth.month);
   const { preferences } = useUserPreferences();
 
+  useEffect(() => {
+    const handleMovementUpdated = () => refetch();
+    window.addEventListener("movement-updated", handleMovementUpdated);
+    return () => window.removeEventListener("movement-updated", handleMovementUpdated);
+  }, [refetch]);
+
   const prefs = preferences ?? DEFAULT_PREFERENCES;
-  const totalMes = calcularTotalMes(entries);
+  
+  const filteredEntries = useMemo(() => {
+    if (!searchQuery) return entries;
+    return entries.filter(e => 
+      e.concept?.toLowerCase().includes(searchQuery) ||
+      e.notes?.toLowerCase().includes(searchQuery)
+    );
+  }, [entries, searchQuery]);
+
+  const totalMes = calcularTotalMes(filteredEntries);
   const totalAnterior = calcularTotalMes(ingresosAnterior);
 
   return (
@@ -38,7 +56,7 @@ export default function IngresosPage() {
         <div>
           <h1 className="text-3xl font-black font-headline text-slate-900 tracking-tight">Ingresos</h1>
           <p className="text-sm text-on-surface-variant mt-0.5">
-            {loading ? "Cargando..." : `${entries.length} movimiento${entries.length !== 1 ? "s" : ""} · ${formatCurrency(totalMes, prefs)} total`}
+            {loading ? "Cargando..." : `${filteredEntries.length} movimiento${filteredEntries.length !== 1 ? "s" : ""} · ${formatCurrency(totalMes, prefs)} total`}
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -96,7 +114,7 @@ export default function IngresosPage() {
       {/* Table */}
       <MovementsTable
         type="income"
-        entries={entries}
+        entries={filteredEntries}
         preferences={preferences ? { ...preferences, date_format: preferences.date_format } : null}
         onDelete={deleteIngreso}
         onRefresh={refetch}

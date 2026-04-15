@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { doc, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase/client";
 import { cn } from "@/lib/utils";
 import { useCategories } from "@/hooks/useCategories";
-import { useEffect } from "react";
 import type { Category } from "@/types";
 
 const BLOCK_LABELS: Record<string, string> = {
@@ -46,28 +45,29 @@ function CategoryRow({
       "flex items-center justify-between px-4 py-3 rounded-xl transition-colors",
       category.is_active ? "bg-surface-container-low" : "bg-surface-container-low/40 opacity-60"
     )}>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 min-w-0">
         <span className={cn(
-          "text-xs font-bold px-2 py-0.5 rounded-full",
+          "text-xs font-bold px-2 py-0.5 rounded-full shrink-0",
           category.type === "income" ? "bg-secondary/10 text-secondary" : "bg-tertiary/10 text-tertiary"
         )}>
           {category.type === "income" ? "Ingreso" : "Gasto"}
         </span>
-        <span className="text-sm font-medium text-on-surface">{category.name}</span>
+        <span className="text-sm font-medium text-on-surface truncate">{category.name}</span>
         {category.rule_block && (
-          <span className="text-xs text-on-surface-variant">· {BLOCK_LABELS[category.rule_block]}</span>
+          <span className="text-xs text-on-surface-variant shrink-0">· {BLOCK_LABELS[category.rule_block]}</span>
         )}
         {category.is_default && (
-          <span className="text-xs text-outline-variant">· Predefinida</span>
+          <span className="text-xs text-outline-variant shrink-0">· Predefinida</span>
         )}
       </div>
       <button
         onClick={handleToggle}
         disabled={loading}
         className={cn(
-          "relative w-10 h-5 rounded-full transition-colors disabled:opacity-50",
+          "relative w-10 h-5 rounded-full transition-colors disabled:opacity-50 shrink-0 ml-3",
           category.is_active ? "bg-primary" : "bg-outline-variant/30"
         )}
+        aria-label={category.is_active ? "Desactivar categoría" : "Activar categoría"}
       >
         <div className={cn(
           "absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform",
@@ -82,7 +82,7 @@ export function CategoriesTab() {
   const { categories: incomeCategories, loading: loadingI } = useCategories("income");
   const { categories: expenseCategories, loading: loadingE } = useCategories("expense");
   const [userId, setUserId] = useState<string | null>(null);
-  const [tab, setTab] = useState<"income" | "expense">("expense");
+  const [tab, setTab] = useState<"expense" | "income">("expense");
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => setUserId(u?.uid ?? null));
@@ -91,7 +91,6 @@ export function CategoriesTab() {
 
   const loading = loadingI || loadingE;
 
-  // Flatten for display: parents + children indented
   const expenseFlat = expenseCategories.flatMap((c) => [
     c,
     ...(c.children ?? []).map((child) => ({ ...child, _indent: true })),
@@ -101,14 +100,11 @@ export function CategoriesTab() {
   const currentList = tab === "expense" ? expenseFlat : incomeFlat;
 
   function handleToggle() {
-    // Trigger re-fetch by relying on useCategories re-running next render
-    // (it's subscribed to auth state, just force a key change here isn't easy)
-    // The updateDoc change propagates on next mount. For now, show toast.
     toast.success("Categoría actualizada");
   }
 
   return (
-    <div className="bg-surface-container-lowest rounded-2xl shadow-[0_2px_12px_rgba(25,28,30,0.06)] overflow-hidden">
+    <div>
       {/* Sub-tabs */}
       <div className="flex border-b border-outline-variant/10">
         {(["expense", "income"] as const).map((t) => (
@@ -116,12 +112,15 @@ export function CategoriesTab() {
             key={t}
             onClick={() => setTab(t)}
             className={cn(
-              "flex-1 py-4 text-sm font-bold font-headline transition-colors",
+              "flex-1 py-3.5 text-sm font-bold font-headline transition-colors flex items-center justify-center gap-2",
               tab === t
-                ? "text-on-surface border-b-2 border-slate-900"
-                : "text-on-surface-variant hover:text-slate-700"
+                ? "text-on-surface border-b-2 border-on-surface"
+                : "text-on-surface-variant hover:text-on-surface"
             )}
           >
+            <span className="material-symbols-outlined text-[16px]">
+              {t === "expense" ? "receipt_long" : "payments"}
+            </span>
             {t === "expense" ? "Gastos" : "Ingresos"}
           </button>
         ))}
@@ -129,9 +128,12 @@ export function CategoriesTab() {
 
       <div className="p-5">
         {loading || !userId ? (
-          <p className="text-sm text-center text-on-surface-variant py-8">Cargando categorías...</p>
+          <div className="py-10 text-center">
+            <div className="w-6 h-6 border-2 border-outline-variant/30 border-t-primary rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-sm text-on-surface-variant">Cargando categorías...</p>
+          </div>
         ) : currentList.length === 0 ? (
-          <div className="py-12 text-center">
+          <div className="py-10 text-center">
             <span className="material-symbols-outlined text-4xl text-outline-variant">category</span>
             <p className="text-sm text-on-surface-variant mt-2">No hay categorías activas</p>
           </div>
@@ -143,11 +145,7 @@ export function CategoriesTab() {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 className={(cat as any)._indent ? "ml-6" : ""}
               >
-                <CategoryRow
-                  category={cat}
-                  userId={userId}
-                  onToggle={handleToggle}
-                />
+                <CategoryRow category={cat} userId={userId} onToggle={handleToggle} />
               </div>
             ))}
           </div>

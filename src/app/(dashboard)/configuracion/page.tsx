@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -30,6 +29,35 @@ const CURRENCIES = [
   { code: "COP", symbol: "$", name: "Peso colombiano" },
 ];
 
+function SectionCard({
+  icon,
+  title,
+  description,
+  children,
+  noPadding = false,
+}: {
+  icon: string;
+  title: string;
+  description: string;
+  children: React.ReactNode;
+  noPadding?: boolean;
+}) {
+  return (
+    <div className="bg-surface-container-lowest rounded-2xl shadow-[0_2px_12px_rgba(25,28,30,0.06)] overflow-hidden">
+      <div className="px-6 py-4 border-b border-outline-variant/10 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-xl bg-surface-container-low flex items-center justify-center shrink-0">
+          <span className="material-symbols-outlined text-on-surface-variant text-[20px]">{icon}</span>
+        </div>
+        <div>
+          <h2 className="text-sm font-bold font-headline text-on-surface">{title}</h2>
+          <p className="text-xs text-on-surface-variant mt-0.5">{description}</p>
+        </div>
+      </div>
+      {noPadding ? children : <div className="p-6">{children}</div>}
+    </div>
+  );
+}
+
 export default function ConfiguracionPage() {
   const { preferences, loading, updatePreferences } = useUserPreferences();
   const router = useRouter();
@@ -46,20 +74,15 @@ export default function ConfiguracionPage() {
   const [decimalFormat, setDecimalFormat] = useState<"comma" | "dot">("comma");
   const [savingCurrency, setSavingCurrency] = useState(false);
 
-  // Inicializar desde preferences
   useEffect(() => {
-    function syncFromPreferences() {
-      if (!preferences) return;
-      setName(preferences.name ?? "");
-      setCurrency(preferences.currency);
-      setCurrencySymbol(preferences.currency_symbol);
-      setSymbolPosition(preferences.symbol_position);
-      setDecimalFormat(preferences.decimal_format);
-    }
-    syncFromPreferences();
+    if (!preferences) return;
+    setName(preferences.name ?? "");
+    setCurrency(preferences.currency);
+    setCurrencySymbol(preferences.currency_symbol);
+    setSymbolPosition(preferences.symbol_position);
+    setDecimalFormat(preferences.decimal_format);
   }, [preferences]);
 
-  // Cargar email del usuario
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
       if (u?.email) setEmail(u.email);
@@ -67,7 +90,6 @@ export default function ConfiguracionPage() {
     return unsub;
   }, []);
 
-  // Actualizar símbolo cuando cambia la moneda
   function handleCurrencyChange(code: string) {
     const found = CURRENCIES.find((c) => c.code === code);
     setCurrency(code);
@@ -107,118 +129,128 @@ export default function ConfiguracionPage() {
     decimal_format: decimalFormat,
   };
 
+  const initials = name
+    ? name.trim().split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase()
+    : email
+    ? email.slice(0, 2).toUpperCase()
+    : "CF";
+
   return (
-    <div className="py-8 max-w-3xl">
-      <div className="mb-8 flex items-start gap-4">
-        <div className="w-12 h-12 rounded-2xl gradient-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/15">
-          <span className="material-symbols-outlined text-on-primary text-[22px] fill-icon">settings</span>
+    <div className="py-8 max-w-2xl space-y-5">
+
+      {/* Page title */}
+      <div>
+        <h1 className="text-2xl font-black font-headline text-on-surface tracking-tight">Configuración</h1>
+        <p className="text-sm text-on-surface-variant mt-0.5">Gestiona tu cuenta y preferencias</p>
+      </div>
+
+      {/* Hero — user identity card */}
+      <div className="gradient-primary rounded-2xl px-6 py-5 flex items-center gap-4 shadow-lg shadow-primary/10">
+        <div className="w-14 h-14 rounded-full bg-white/15 flex items-center justify-center text-xl font-black font-headline text-on-primary shrink-0 ring-2 ring-white/20">
+          {initials}
         </div>
-        <div>
-          <h1 className="text-3xl font-black font-headline text-on-surface tracking-tight">Configuración</h1>
-          <p className="text-sm text-on-surface-variant mt-0.5">Personaliza tu cuenta y preferencias</p>
+        <div className="min-w-0">
+          <p className="font-bold font-headline text-on-primary text-lg leading-tight truncate">
+            {loading ? "Cargando..." : name || "Sin nombre"}
+          </p>
+          <p className="text-on-primary/60 text-sm truncate mt-0.5">{email}</p>
         </div>
       </div>
 
-      <Tabs defaultValue="perfil">
-        <TabsList className="bg-surface-container-low rounded-xl p-1 mb-6 w-full grid grid-cols-4">
-          <TabsTrigger value="perfil" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[16px]">person</span>
-            <span className="hidden sm:inline">Perfil</span>
-          </TabsTrigger>
-          <TabsTrigger value="moneda" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[16px]">payments</span>
-            <span className="hidden sm:inline">Moneda</span>
-          </TabsTrigger>
-          <TabsTrigger value="categorias" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[16px]">category</span>
-            <span className="hidden sm:inline">Categorías</span>
-          </TabsTrigger>
-          <TabsTrigger value="apariencia" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[16px]">palette</span>
-            <span className="hidden sm:inline">Apariencia</span>
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Pestaña Perfil */}
-        <TabsContent value="perfil">
-          <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_2px_12px_rgba(25,28,30,0.06)] space-y-6">
-            {loading ? (
-              <p className="text-sm text-on-surface-variant">Cargando...</p>
-            ) : (
-              <>
-                <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Nombre</Label>
-                  <Input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Tu nombre"
-                    className="bg-surface-container-low border-none rounded-xl focus-visible:ring-primary/20"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Email</Label>
-                  <Input
-                    value={email}
-                    readOnly
-                    className="bg-surface-container-low border-none rounded-xl opacity-60 cursor-not-allowed"
-                  />
-                  <p className="text-xs text-on-surface-variant">El email no se puede modificar desde aquí</p>
-                </div>
-
-                <div className="flex items-center justify-between pt-2">
-                  <Button
-                    onClick={handleSaveProfile}
-                    disabled={savingProfile}
-                    className="gradient-primary text-on-primary font-bold font-headline rounded-xl px-6 hover:opacity-90 active:scale-95 transition-all"
-                  >
-                    {savingProfile ? "Guardando..." : "Guardar cambios"}
-                  </Button>
-
-                  <button
-                    onClick={handleSignOut}
-                    className="flex items-center gap-2 text-sm font-semibold text-error hover:text-error/80 transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">logout</span>
-                    Cerrar sesión
-                  </button>
-                </div>
-              </>
-            )}
+      {/* Sección: Perfil */}
+      <SectionCard icon="person" title="Perfil" description="Nombre y datos de tu cuenta">
+        {loading ? (
+          <div className="flex items-center gap-3 py-4 text-sm text-on-surface-variant">
+            <div className="w-4 h-4 border-2 border-outline-variant/30 border-t-primary rounded-full animate-spin" />
+            Cargando...
           </div>
-        </TabsContent>
-
-        {/* Pestaña Moneda */}
-        <TabsContent value="moneda">
-          <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_2px_12px_rgba(25,28,30,0.06)] space-y-6">
+        ) : (
+          <div className="space-y-5">
             <div className="space-y-2">
-              <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Moneda</Label>
-              <Select value={currency} onValueChange={(v) => v && handleCurrencyChange(v)}>
-                <SelectTrigger className="bg-surface-container-low border-none rounded-xl focus:ring-primary/20">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {CURRENCIES.map((c) => (
-                    <SelectItem key={c.code} value={c.code}>
-                      {c.symbol} · {c.name} ({c.code})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                Nombre
+              </Label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Tu nombre"
+                className="bg-surface-container-low border-none rounded-xl focus-visible:ring-primary/20"
+              />
             </div>
 
-            <div className="space-y-3">
-              <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Posición del símbolo</Label>
-              <div className="flex gap-3">
+            <div className="space-y-2">
+              <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                Email
+              </Label>
+              <Input
+                value={email}
+                readOnly
+                className="bg-surface-container-low border-none rounded-xl opacity-60 cursor-not-allowed"
+              />
+              <p className="text-xs text-on-surface-variant">El email no se puede modificar desde aquí</p>
+            </div>
+
+            <Button
+              onClick={handleSaveProfile}
+              disabled={savingProfile}
+              className="gradient-primary text-on-primary font-bold font-headline rounded-xl px-6 hover:opacity-90 active:scale-95 transition-all"
+            >
+              {savingProfile ? "Guardando..." : "Guardar cambios"}
+            </Button>
+
+            {/* Danger zone */}
+            <div className="pt-4 border-t border-outline-variant/10">
+              <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-3">
+                Sesión
+              </p>
+              <button
+                onClick={handleSignOut}
+                className="flex items-center gap-2.5 text-sm font-semibold text-error hover:text-error/80 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">logout</span>
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+        )}
+      </SectionCard>
+
+      {/* Sección: Moneda y formato */}
+      <SectionCard icon="payments" title="Moneda y formato" description="Configura cómo se muestran los importes">
+        <div className="space-y-5">
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+              Moneda
+            </Label>
+            <Select value={currency} onValueChange={(v) => v && handleCurrencyChange(v)}>
+              <SelectTrigger className="bg-surface-container-low border-none rounded-xl focus:ring-primary/20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CURRENCIES.map((c) => (
+                  <SelectItem key={c.code} value={c.code}>
+                    {c.symbol} · {c.name} ({c.code})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                Posición del símbolo
+              </Label>
+              <div className="flex gap-2">
                 {(["before", "after"] as const).map((pos) => (
                   <button
                     key={pos}
                     type="button"
                     onClick={() => setSymbolPosition(pos)}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold font-headline transition-all border ${
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold font-headline transition-all ${
                       symbolPosition === pos
-                        ? "gradient-primary text-on-primary border-transparent"
-                        : "bg-surface-container-low text-on-surface-variant border-transparent hover:border-outline-variant/30"
+                        ? "gradient-primary text-on-primary"
+                        : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
                     }`}
                   >
                     {pos === "before" ? `${currencySymbol} Antes` : `Después ${currencySymbol}`}
@@ -227,18 +259,20 @@ export default function ConfiguracionPage() {
               </div>
             </div>
 
-            <div className="space-y-3">
-              <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Separador decimal</Label>
-              <div className="flex gap-3">
+            <div className="space-y-2">
+              <Label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                Separador decimal
+              </Label>
+              <div className="flex gap-2">
                 {(["comma", "dot"] as const).map((format) => (
                   <button
                     key={format}
                     type="button"
                     onClick={() => setDecimalFormat(format)}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold font-headline transition-all border ${
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold font-headline transition-all ${
                       decimalFormat === format
-                        ? "gradient-primary text-on-primary border-transparent"
-                        : "bg-surface-container-low text-on-surface-variant border-transparent hover:border-outline-variant/30"
+                        ? "gradient-primary text-on-primary"
+                        : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
                     }`}
                   >
                     {format === "comma" ? "1.234,56" : "1,234.56"}
@@ -246,34 +280,44 @@ export default function ConfiguracionPage() {
                 ))}
               </div>
             </div>
+          </div>
 
-            {/* Preview */}
-            <div className="bg-surface-container-low rounded-xl px-5 py-4">
-              <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Vista previa</p>
-              <p className="text-xl font-black font-headline text-on-surface">
+          {/* Preview */}
+          <div className="bg-surface-container-low rounded-xl px-5 py-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Vista previa</p>
+              <p className="text-2xl font-black font-headline text-on-surface mt-1">
                 {formatCurrency(1234.56, previewPrefs)}
               </p>
             </div>
-
-            <Button
-              onClick={handleSaveCurrency}
-              disabled={savingCurrency}
-              className="w-full gradient-primary text-on-primary font-bold font-headline rounded-xl py-3 hover:opacity-90 active:scale-95 transition-all"
-            >
-              {savingCurrency ? "Guardando..." : "Guardar preferencias"}
-            </Button>
+            <span className="material-symbols-outlined text-outline-variant text-[32px]">preview</span>
           </div>
-        </TabsContent>
-        {/* Pestaña Categorías */}
-        <TabsContent value="categorias">
-          <CategoriesTab />
-        </TabsContent>
 
-        {/* Pestaña Apariencia */}
-        <TabsContent value="apariencia">
-          <AppearanceTab />
-        </TabsContent>
-      </Tabs>
+          <Button
+            onClick={handleSaveCurrency}
+            disabled={savingCurrency}
+            className="w-full gradient-primary text-on-primary font-bold font-headline rounded-xl py-3 hover:opacity-90 active:scale-95 transition-all"
+          >
+            {savingCurrency ? "Guardando..." : "Guardar preferencias"}
+          </Button>
+        </div>
+      </SectionCard>
+
+      {/* Sección: Categorías */}
+      <SectionCard
+        icon="category"
+        title="Categorías"
+        description="Activa o desactiva categorías de gastos e ingresos"
+        noPadding
+      >
+        <CategoriesTab />
+      </SectionCard>
+
+      {/* Sección: Apariencia */}
+      <SectionCard icon="palette" title="Apariencia" description="Tema visual de la aplicación">
+        <AppearanceTab />
+      </SectionCard>
+
     </div>
   );
 }

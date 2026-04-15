@@ -14,7 +14,7 @@ Stack: **Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · shadcn/ui �
 | 0 | Fundaciones | Setup del proyecto, diseño y base de datos | ✅ Completa |
 | 1 | MVP | Auth + Layout + Ingresos + Gastos + Dashboard básico | ✅ Completa |
 | 2 | Core V2 | Presupuesto + Seguimiento + Regla 50/30/20 | ✅ Completa |
-| 3 | Core V3 | Objetivos de ahorro + Exportación + Configuración completa | ⬜ Pendiente |
+| 3 | Core V3 | Objetivos de ahorro + Exportación + Configuración completa | ✅ Completa |
 | 4 | Polish | Gráficas reales + Dark mode + Testing + Optimización | ⬜ Pendiente |
 
 ---
@@ -525,7 +525,7 @@ generarInsightTexto(bloques: RuleBlocks): string
 
 ---
 
-### 3.1 Objetivos de Ahorro
+### ✅ 3.1 Objetivos de Ahorro
 
 **Qué hacer:**
 - Sección superior de `/objetivos` con hasta 5 metas
@@ -560,7 +560,7 @@ calcularAportacionNecesaria(restante: number, fechaLimite: Date): number
 
 ---
 
-### 3.2 Exportación (.xlsx)
+### ✅ 3.2 Exportación (.xlsx)
 
 **Qué hacer:**
 - Botón "Exportar" en TopNavBar y en cada módulo de datos
@@ -593,7 +593,7 @@ exportToXlsx(
 
 ---
 
-### 3.3 Configuración Avanzada (Categorías + Apariencia)
+### ✅ 3.3 Configuración Avanzada (Categorías + Apariencia)
 
 **Qué hacer:**
 - Añadir las pestañas de "Gestión de Categorías" y "Apariencia" a `/configuracion`

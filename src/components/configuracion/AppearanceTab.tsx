@@ -4,8 +4,8 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 const THEMES = [
-  { value: "light",  label: "Claro",   icon: "light_mode" },
-  { value: "dark",   label: "Oscuro",  icon: "dark_mode" },
+  { value: "light", label: "Claro", icon: "light_mode" },
+  { value: "dark", label: "Oscuro", icon: "dark_mode" },
   { value: "system", label: "Sistema", icon: "desktop_windows" },
 ] as const;
 
@@ -14,7 +14,7 @@ export function AppearanceTab() {
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         {THEMES.map(({ value, label, icon }) => (
           <button
             key={value}

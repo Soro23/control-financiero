@@ -62,12 +62,12 @@ function CategoryRow({
         >
           {category.type === "income" ? "Ingreso" : "Gasto"}
         </span>
-        <span className="text-sm font-medium text-on-surface truncate">{category.name}</span>
+        <span className="text-sm font-medium text-on-surface">{category.name}</span>
         {category.rule_block && (
           <span className="text-xs text-on-surface-variant shrink-0">· {BLOCK_LABELS[category.rule_block]}</span>
         )}
         {category.is_default && (
-          <span className="text-xs text-outline-variant shrink-0">· Predefinida</span>
+          <span className="text-xs text-outline-variant shrink-0 truncate">· Predefinida</span>
         )}
       </div>
       <div className="flex items-center gap-2 shrink-0 ml-3">
@@ -141,7 +141,7 @@ export function CategoriesTab() {
 
   const currentList = tab === "expense" ? expenseFlat : incomeFlat;
 
-function handleToggle() {
+  function handleToggle() {
     refetchI();
     refetchE();
     toast.success("Categoría actualizada");

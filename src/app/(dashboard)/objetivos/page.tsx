@@ -120,7 +120,7 @@ export default function ObjetivosPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-5 xl:grid-cols-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 xl:grid-cols-3">
             {goals.map((goal) => (
               <GoalCard
                 key={goal.id}

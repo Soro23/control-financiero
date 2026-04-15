@@ -13,7 +13,7 @@ export function RuleSection({ blocks, insightText, preferences }: RuleSectionPro
   return (
     <div className="flex flex-col gap-6">
       {/* Main grid: bars + projection */}
-      <div className="grid grid-cols-[1fr_320px] gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
         {/* Bars */}
         <div className="bg-surface-container-lowest rounded-2xl shadow-[0_2px_12px_rgba(25,28,30,0.06)] overflow-hidden">
           <div className="px-6 py-5 border-b border-outline-variant/10">

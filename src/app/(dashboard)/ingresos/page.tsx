@@ -26,7 +26,7 @@ function IngresosContent() {
     month: now.getMonth() + 1,
     year: now.getFullYear(),
   });
-const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("search") || "";
 
@@ -45,7 +45,7 @@ const [modalOpen, setModalOpen] = useState(false);
   }, [refetch]);
 
   const prefs = preferences ?? DEFAULT_PREFERENCES;
-  
+
   const normalizeText = (s: string) =>
     s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
@@ -93,7 +93,7 @@ const [modalOpen, setModalOpen] = useState(false);
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_2px_12px_rgba(25,28,30,0.06)]">
           <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Total del mes</p>
           <p className="text-2xl font-black font-headline text-secondary">{formatCurrency(totalMes, prefs)}</p>

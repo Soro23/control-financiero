@@ -40,7 +40,7 @@ export function MonthSelector({ value, onChange }: MonthSelectorProps) {
     <div className="flex items-center gap-2">
       <button
         onClick={prev}
-        className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+        className="min-w-[44px] min-h-[44px] p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center justify-center"
         aria-label="Mes anterior"
       >
         <span className="material-symbols-outlined text-[20px]">chevron_left</span>
@@ -53,7 +53,7 @@ export function MonthSelector({ value, onChange }: MonthSelectorProps) {
       <button
         onClick={next}
         disabled={isCurrentMonth}
-        className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+        className="min-w-[44px] min-h-[44px] p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed"
         aria-label="Mes siguiente"
       >
         <span className="material-symbols-outlined text-[20px]">chevron_right</span>

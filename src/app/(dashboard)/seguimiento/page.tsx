@@ -43,7 +43,7 @@ export default function SeguimientoPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-black font-headline text-slate-900 tracking-tight">Seguimiento</h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black font-headline text-slate-900 tracking-tight">Seguimiento</h1>
           <p className="text-sm text-on-surface-variant mt-0.5">Presupuesto vs gastos reales</p>
         </div>
         <MonthSelector value={period} onChange={setPeriod} />

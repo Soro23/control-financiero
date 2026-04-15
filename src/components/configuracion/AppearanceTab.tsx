@@ -14,7 +14,7 @@ export function AppearanceTab() {
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {THEMES.map(({ value, label, icon }) => (
           <button
             key={value}

@@ -16,7 +16,7 @@ export function TrackingKPIs({ entries, preferences }: TrackingKPIsProps) {
   const isOver = diferencia < 0;
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       {/* Presupuestado */}
       <div className="bg-surface-container-lowest rounded-2xl shadow-[0_2px_12px_rgba(25,28,30,0.06)] p-6">
         <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center mb-4">

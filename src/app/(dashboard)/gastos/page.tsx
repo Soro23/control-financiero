@@ -58,14 +58,14 @@ function GastosContent() {
   return (
     <div className="py-8 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black font-headline text-slate-900 tracking-tight">Gastos</h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black font-headline text-slate-900 tracking-tight">Gastos</h1>
           <p className="text-sm text-on-surface-variant mt-0.5">
             {loading ? "Cargando..." : `${filteredEntries.length} movimiento${filteredEntries.length !== 1 ? "s" : ""} · ${formatCurrency(totalMes, prefs)} total`}
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
           <MonthSelector value={period} onChange={setPeriod} />
           <button
             onClick={() => exportToXlsx("gastos", { gastos: entries, month: period.month, year: period.year }, prefs)}
@@ -74,14 +74,14 @@ function GastosContent() {
             className="flex items-center gap-2 bg-surface-container-lowest text-slate-600 px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-container border border-outline-variant/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <span className="material-symbols-outlined text-[18px]">download</span>
-            Exportar
+            <span className="hidden sm:inline">Exportar</span>
           </button>
           <button
             onClick={() => setModalOpen(true)}
             className="flex items-center gap-2 gradient-primary text-on-primary px-5 py-2.5 rounded-xl font-bold font-headline text-sm hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary/10"
           >
             <span className="material-symbols-outlined text-[18px]">add</span>
-            Nuevo Gasto
+            <span className="hidden sm:inline">Nuevo Gasto</span>
           </button>
         </div>
       </div>

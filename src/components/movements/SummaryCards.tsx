@@ -24,7 +24,7 @@ export function SummaryCards({
   const direction = diff > 0 ? "up" : diff < 0 ? "down" : "neutral";
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <KPICard
         label={type === "income" ? "Total ingresos" : "Total gastos"}
         value={loading ? "—" : formatCurrency(totalMes, preferences)}

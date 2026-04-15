@@ -58,7 +58,7 @@ export default function PresupuestoPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-black font-headline text-slate-900 tracking-tight">Presupuesto</h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black font-headline text-slate-900 tracking-tight">Presupuesto</h1>
           <p className="text-sm text-on-surface-variant mt-0.5">
             {isTemplate && !loading ? "Usando plantilla base — guarda para personalizar este mes" : "Presupuesto mensual"}
           </p>

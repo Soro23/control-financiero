@@ -69,7 +69,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-3xl font-black font-headline text-on-surface tracking-tight">Resumen</h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black font-headline text-on-surface tracking-tight">Resumen</h1>
           <p className="text-sm text-on-surface-variant mt-0.5">Vista general de tus finanzas</p>
         </div>
         <MonthSelector value={period} onChange={setPeriod} />

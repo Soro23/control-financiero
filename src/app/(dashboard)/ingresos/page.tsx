@@ -28,7 +28,7 @@ function IngresosContent() {
   });
 const [modalOpen, setModalOpen] = useState(false);
   const searchParams = useSearchParams();
-  const searchQuery = searchParams.get("search")?.toLowerCase() || "";
+  const searchQuery = searchParams.get("search") || "";
 
   const prevMonth = period.month === 1
     ? { month: 12, year: period.year - 1 }
@@ -46,11 +46,15 @@ const [modalOpen, setModalOpen] = useState(false);
 
   const prefs = preferences ?? DEFAULT_PREFERENCES;
   
+  const normalizeText = (s: string) =>
+    s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
   const filteredEntries = useMemo(() => {
     if (!searchQuery) return entries;
-    return entries.filter(e => 
-      e.concept?.toLowerCase().includes(searchQuery) ||
-      e.notes?.toLowerCase().includes(searchQuery)
+    const q = normalizeText(searchQuery);
+    return entries.filter(e =>
+      normalizeText(e.concept || "").includes(q) ||
+      normalizeText(e.notes || "").includes(q)
     );
   }, [entries, searchQuery]);
 

@@ -142,10 +142,11 @@ export function MovementModal({
 
     // Precargar datos si es edición
     if (defaultEntry) {
+      const typeUnchanged = type === defaultEntry.type;
       reset({
         concept: defaultEntry.concept,
-        category_id: defaultEntry.category_id,
-        subcategory_id: defaultEntry.subcategory_id || "",
+        category_id: typeUnchanged ? defaultEntry.category_id : "",
+        subcategory_id: typeUnchanged ? (defaultEntry.subcategory_id || "") : "",
         amount: defaultEntry.amount.toString(),
         date: defaultEntry.date,
         is_recurring: defaultEntry.is_recurring,
@@ -315,7 +316,7 @@ export function MovementModal({
         <div className="flex rounded-xl bg-surface-container-low p-1 gap-1">
           <button
             type="button"
-            onClick={() => setType("expense")}
+            onClick={() => { setValue("category_id", ""); setValue("subcategory_id", ""); setType("expense"); }}
             className={cn(
               "flex-1 py-2 text-sm font-semibold font-headline rounded-lg transition-all",
               type === "expense"
@@ -328,7 +329,7 @@ export function MovementModal({
           </button>
           <button
             type="button"
-            onClick={() => setType("income")}
+            onClick={() => { setValue("category_id", ""); setValue("subcategory_id", ""); setType("income"); }}
             className={cn(
               "flex-1 py-2 text-sm font-semibold font-headline rounded-lg transition-all",
               type === "income"

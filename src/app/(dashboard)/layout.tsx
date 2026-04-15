@@ -15,15 +15,6 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-surface">
-      {/* Mobile menu button */}
-      <button
-        onClick={() => setSidebarOpen(true)}
-        className="fixed top-4 left-4 z-30 p-2 rounded-lg bg-surface-container-lowest shadow-md lg:hidden min-w-[44px] min-h-[44px] flex items-center justify-center"
-        aria-label="Abrir menú"
-      >
-        <span className="material-symbols-outlined">menu</span>
-      </button>
-
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       <div className="lg:ml-72 flex flex-col min-h-screen">

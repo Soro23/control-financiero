@@ -155,3 +155,36 @@ export interface Insight {
   type: "success" | "warning" | "danger";
   message: string;
 }
+
+// ─── Saving Goals ─────────────────────────────────────────────
+
+export interface SavingGoal {
+  id: string;
+  user_id: string;
+  name: string;
+  target_amount: number;
+  accumulated: number;
+  deadline: string | null;       // YYYY-MM-DD or null
+  monthly_contribution: number | null;
+  icon: string;                  // Material Symbol name
+  color: "primary" | "secondary" | "tertiary" | "error";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SavingGoalFormData {
+  name: string;
+  target_amount: number;
+  deadline?: string;
+  monthly_contribution?: number;
+  icon: string;
+  color: "primary" | "secondary" | "tertiary" | "error";
+}
+
+export interface GoalCalculations {
+  progress: number;              // 0–100
+  remaining: number;
+  monthsLeft: number | null;
+  estimatedDate: Date | null;
+  requiredMonthly: number | null;
+}

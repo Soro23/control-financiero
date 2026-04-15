@@ -8,6 +8,7 @@ import { useGastos } from "@/hooks/useGastos";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
 import { calcularTotalMes } from "@/lib/calculations/gastos";
 import { formatCurrency, DEFAULT_PREFERENCES } from "@/lib/utils/formatCurrency";
+import { exportToXlsx } from "@/lib/export/exportToXlsx";
 import type { MonthYear } from "@/types";
 
 export default function GastosPage() {
@@ -42,6 +43,15 @@ export default function GastosPage() {
         </div>
         <div className="flex items-center gap-4">
           <MonthSelector value={period} onChange={setPeriod} />
+          <button
+            onClick={() => exportToXlsx("gastos", { gastos: entries, month: period.month, year: period.year }, prefs)}
+            disabled={entries.length === 0}
+            title="Exportar a Excel"
+            className="flex items-center gap-2 bg-surface-container-lowest text-slate-600 px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-container border border-outline-variant/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <span className="material-symbols-outlined text-[18px]">download</span>
+            Exportar
+          </button>
           <button
             onClick={() => setModalOpen(true)}
             className="flex items-center gap-2 gradient-primary text-on-primary px-5 py-2.5 rounded-xl font-bold font-headline text-sm hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary/10"

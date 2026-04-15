@@ -14,6 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { AppearanceTab } from "@/components/configuracion/AppearanceTab";
+import { CategoriesTab } from "@/components/configuracion/CategoriesTab";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase/client";
 import { formatCurrency } from "@/lib/utils/formatCurrency";
@@ -119,6 +121,12 @@ export default function ConfiguracionPage() {
           </TabsTrigger>
           <TabsTrigger value="moneda" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm">
             Moneda
+          </TabsTrigger>
+          <TabsTrigger value="categorias" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm">
+            Categorías
+          </TabsTrigger>
+          <TabsTrigger value="apariencia" className="rounded-lg font-headline font-semibold text-sm data-[state=active]:bg-surface-container-lowest data-[state=active]:shadow-sm">
+            Apariencia
           </TabsTrigger>
         </TabsList>
 
@@ -246,6 +254,15 @@ export default function ConfiguracionPage() {
               {savingCurrency ? "Guardando..." : "Guardar preferencias"}
             </Button>
           </div>
+        </TabsContent>
+        {/* Pestaña Categorías */}
+        <TabsContent value="categorias">
+          <CategoriesTab />
+        </TabsContent>
+
+        {/* Pestaña Apariencia */}
+        <TabsContent value="apariencia">
+          <AppearanceTab />
         </TabsContent>
       </Tabs>
     </div>

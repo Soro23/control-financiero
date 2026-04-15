@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -32,8 +33,10 @@ export default function RootLayout({
       className={`${inter.variable} ${manrope.variable} h-full`}
     >
       <body className="min-h-full antialiased font-body bg-surface text-on-surface">
-        {children}
-        <Toaster position="bottom-right" />
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          {children}
+          <Toaster position="bottom-right" />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -5,7 +5,11 @@ import { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase/client";
 
-export function TopNavBar() {
+interface TopNavBarProps {
+  onMenuClick?: () => void;
+}
+
+export function TopNavBar({ onMenuClick }: TopNavBarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<{ name?: string; email?: string } | null>(null);
@@ -43,11 +47,20 @@ export function TopNavBar() {
     : user?.email?.slice(0, 2).toUpperCase() ?? "CF";
 
   return (
-    <header className="h-20 sticky top-0 z-40 bg-transparent flex justify-between items-center px-12">
+    <header className="h-20 sticky top-0 z-40 bg-transparent flex justify-between items-center px-4 md:px-12">
       {/* Left */}
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-4 md:gap-8">
+        {onMenuClick && (
+          <button
+            onClick={onMenuClick}
+            className="p-2 rounded-lg hover:bg-surface-container-low lg:hidden min-w-[44px] min-h-[44px] flex items-center justify-center"
+            aria-label="Abrir menú"
+          >
+            <span className="material-symbols-outlined text-[24px]">menu</span>
+          </button>
+        )}
         {searchEnabled && (
-          <div className="relative">
+          <div className="relative hidden sm:block">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-xl">
               search
             </span>

@@ -32,9 +32,14 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${manrope.variable} h-full`}
     >
-      <body className="min-h-full antialiased font-body bg-surface text-on-surface">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+      </head>
+      <body className="min-h-full antialiased font-body bg-surface text-on-surface overflow-x-hidden">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          {children}
+          <main className="w-full overflow-x-hidden">
+            {children}
+          </main>
           <Toaster position="bottom-right" />
         </ThemeProvider>
       </body>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { MonthSelector } from "@/components/shared/MonthSelector";
 import { MovementsTable } from "@/components/movements/MovementsTable";
@@ -13,12 +13,20 @@ import { exportToXlsx } from "@/lib/export/exportToXlsx";
 import type { MonthYear } from "@/types";
 
 export default function IngresosPage() {
+  return (
+    <Suspense fallback={<div className="py-8 text-center">Cargando...</div>}>
+      <IngresosContent />
+    </Suspense>
+  );
+}
+
+function IngresosContent() {
   const now = new Date();
   const [period, setPeriod] = useState<MonthYear>({
     month: now.getMonth() + 1,
     year: now.getFullYear(),
   });
-  const [modalOpen, setModalOpen] = useState(false);
+const [modalOpen, setModalOpen] = useState(false);
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("search")?.toLowerCase() || "";
 

@@ -14,7 +14,12 @@ const NAV_LINKS = [
   { href: "/configuracion", icon: "settings",                label: "Configuración" },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleMovementSaved = () => {
@@ -23,7 +28,20 @@ export function Sidebar() {
 
   return (
     <>
-      <aside className="fixed left-0 top-0 h-screen w-72 sidebar-glass border-r border-slate-200/15 flex flex-col py-8 px-6 z-50">
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+      
+      <aside className={`
+        fixed top-0 h-screen w-72 sidebar-glass border-r border-slate-200/15 
+        flex flex-col py-8 px-6 z-50 transition-transform duration-300
+        lg:translate-x-0 lg:block
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+      `}>
         {/* Logo */}
         <div className="mb-10">
           <span className="text-2xl font-black text-slate-900 font-headline tracking-tight">
@@ -37,7 +55,7 @@ export function Sidebar() {
         {/* Nav links */}
         <nav className="flex-1 space-y-1">
           {NAV_LINKS.map((link) => (
-            <NavItem key={link.href} {...link} />
+            <NavItem key={link.href} {...link} onClick={onClose} />
           ))}
         </nav>
 

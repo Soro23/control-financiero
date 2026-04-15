@@ -51,6 +51,7 @@ const movementSchema = z.object({
   ),
   date: z.string().min(1, "La fecha es obligatoria"),
   is_recurring: z.boolean(),
+  recurrence_frequency: z.enum(["weekly", "biweekly", "monthly", "bimonthly", "quarterly", "yearly"]).optional(),
   notes: z.string().optional(),
 });
 
@@ -111,11 +112,13 @@ export function MovementModal({
       amount: "",
       date: todayISO(),
       is_recurring: false,
+      recurrence_frequency: undefined,
       notes: "",
     },
   });
 
   const selectedCategoryId = watch("category_id");
+  const isRecurring = watch("is_recurring");
 
   // Cargar categorías al abrir o cambiar tipo
   useEffect(() => {
@@ -146,6 +149,7 @@ export function MovementModal({
         amount: defaultEntry.amount.toString(),
         date: defaultEntry.date,
         is_recurring: defaultEntry.is_recurring,
+        recurrence_frequency: (defaultEntry as any).recurrence_frequency,
         notes: defaultEntry.notes || "",
       });
     } else {
@@ -156,6 +160,7 @@ export function MovementModal({
         amount: "",
         date: todayISO(),
         is_recurring: false,
+        recurrence_frequency: undefined,
         notes: "",
       });
     }
@@ -192,38 +197,100 @@ export function MovementModal({
     }
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  function getNextDate(currentDate: string, frequency: string): string {
+    const date = new Date(currentDate);
+    switch (frequency) {
+      case "weekly":
+        date.setDate(date.getDate() + 7);
+        break;
+      case "biweekly":
+        date.setDate(date.getDate() + 14);
+        break;
+      case "monthly":
+        date.setMonth(date.getMonth() + 1);
+        break;
+      case "bimonthly":
+        date.setMonth(date.getMonth() + 2);
+        break;
+      case "quarterly":
+        date.setMonth(date.getMonth() + 3);
+        break;
+      case "yearly":
+        date.setFullYear(date.getFullYear() + 1);
+        break;
+    }
+    return date.toISOString().split("T")[0];
+  }
+
+  async function createRecurringEntries(
+    baseData: Record<string, unknown>,
+    startDate: string,
+    frequency: string | undefined,
+    userId: string,
+    collectionName: string
+  ) {
+    if (!frequency || frequency === "monthly") return;
+    
+    const now = new Date();
+    const maxDate = new Date(now.getFullYear(), now.getMonth() + 3, 1);
+    let currentDate = new Date(startDate);
+    const entries: Record<string, unknown>[] = [];
+    
+    while (currentDate <= maxDate) {
+      if (currentDate > now) break;
+      entries.push({ ...baseData, date: currentDate.toISOString().split("T")[0] });
+      currentDate = new Date(getNextDate(currentDate.toISOString().split("T")[0], frequency));
+    }
+    
+    if (entries.length > 0) {
+      const batch = entries.map(e => 
+        addDoc(collection(db, "users", userId, collectionName), e)
+      );
+      await Promise.all(batch);
+    }
+  }
+
   async function onSubmit(values: MovementFormValues) {
     if (!userId) return;
     setLoading(true);
 
     const amount = parseFloat(values.amount);
     const collectionName = type === "income" ? "income_entries" : "expense_entries";
+    const baseData = {
+      concept: values.concept,
+      category_id: values.category_id,
+      ...(type === "expense" && { subcategory_id: values.subcategory_id || null }),
+      amount,
+      is_recurring: values.is_recurring,
+      recurrence_frequency: values.is_recurring ? values.recurrence_frequency : null,
+      notes: values.notes || null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
 
     try {
       if (isEditing && defaultEntry) {
         await updateDoc(doc(db, "users", userId, collectionName, defaultEntry.id), {
-          concept: values.concept,
-          category_id: values.category_id,
-          ...(type === "expense" && { subcategory_id: values.subcategory_id || null }),
-          amount,
-          date: values.date,
-          is_recurring: values.is_recurring,
-          notes: values.notes || null,
+          ...baseData,
           updated_at: new Date().toISOString(),
         });
         toast.success(type === "income" ? "Ingreso actualizado correctamente" : "Gasto actualizado correctamente");
       } else {
         await addDoc(collection(db, "users", userId, collectionName), {
-          concept: values.concept,
-          category_id: values.category_id,
-          ...(type === "expense" && { subcategory_id: values.subcategory_id || null }),
-          amount,
+          ...baseData,
           date: values.date,
-          is_recurring: values.is_recurring,
-          notes: values.notes || null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
         });
+        
+        if (values.is_recurring && values.recurrence_frequency) {
+          await createRecurringEntries(
+            baseData,
+            values.date,
+            values.recurrence_frequency,
+            userId,
+            collectionName
+          );
+        }
+        
         toast.success(type === "income" ? "Ingreso registrado correctamente" : "Gasto registrado correctamente");
       }
       onOpenChange(false);
@@ -316,7 +383,9 @@ export function MovementModal({
               onValueChange={(v) => v && setValue("category_id", v, { shouldValidate: true })}
             >
               <SelectTrigger className="bg-surface-container-low border-none rounded-xl focus:ring-primary/20">
-                <SelectValue placeholder="Selecciona categoría" />
+                <SelectValue placeholder="Selecciona categoría">
+                  {categories.find((c) => c.id === watch("category_id"))?.name || "Selecciona categoría"}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => (
@@ -337,7 +406,9 @@ export function MovementModal({
                 onValueChange={(v) => v != null && setValue("subcategory_id", v)}
               >
                 <SelectTrigger className="bg-surface-container-low border-none rounded-xl focus:ring-primary/20">
-                  <SelectValue placeholder="Selecciona subcategoría" />
+                  <SelectValue placeholder="Selecciona subcategoría">
+                    {subcategories.find((s) => s.id === watch("subcategory_id"))?.name || "Selecciona subcategoría"}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {subcategories.map((sub) => (
@@ -359,23 +430,46 @@ export function MovementModal({
             />
           </div>
 
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              {...register("is_recurring")}
-              type="checkbox"
-              className="w-4 h-4 rounded accent-primary cursor-pointer"
-            />
-            <span className="text-sm text-slate-600">
-              Es un {type === "income" ? "ingreso" : "gasto"} recurrente (mensual)
-            </span>
-          </label>
+          <div className="space-y-3">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                {...register("is_recurring")}
+                type="checkbox"
+                className="w-4 h-4 rounded accent-primary cursor-pointer"
+              />
+              <span className="text-sm text-slate-600">
+                Es un {type === "income" ? "ingreso" : "gasto"} recurrente
+              </span>
+            </label>
+
+            {isRecurring && (
+              <div className="pl-7">
+                <Select
+                  value={watch("recurrence_frequency") || ""}
+                  onValueChange={(v) => v && setValue("recurrence_frequency", v as any)}
+                >
+                  <SelectTrigger className="bg-surface-container-low border-none rounded-xl focus:ring-primary/20 text-sm">
+                    <SelectValue placeholder="Selecciona frecuencia" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="weekly">Semanal</SelectItem>
+                    <SelectItem value="biweekly">Quincenal</SelectItem>
+                    <SelectItem value="monthly">Mensual</SelectItem>
+                    <SelectItem value="bimonthly">Bimensual (2 meses)</SelectItem>
+                    <SelectItem value="quarterly">Trimestral</SelectItem>
+                    <SelectItem value="yearly">Anual</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
 
           <Button
             type="submit"
             disabled={loading}
             className="w-full gradient-primary text-on-primary font-bold font-headline rounded-xl py-3 hover:opacity-90 active:scale-95 transition-all"
           >
-            {loading ? "Guardando..." : `Guardar ${type === "income" ? "Ingreso" : "Gasto"}`}
+            {loading ? "Guardando..." : isEditing ? "Actualizar" : `Guardar ${type === "income" ? "Ingreso" : "Gasto"}`}
           </Button>
         </form>
       </DialogContent>

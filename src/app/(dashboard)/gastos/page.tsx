@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { MonthSelector } from "@/components/shared/MonthSelector";
 import { MovementsTable } from "@/components/movements/MovementsTable";
@@ -13,6 +13,14 @@ import { exportToXlsx } from "@/lib/export/exportToXlsx";
 import type { MonthYear } from "@/types";
 
 export default function GastosPage() {
+  return (
+    <Suspense fallback={<div className="py-8 text-center">Cargando...</div>}>
+      <GastosContent />
+    </Suspense>
+  );
+}
+
+function GastosContent() {
   const now = new Date();
   const [period, setPeriod] = useState<MonthYear>({
     month: now.getMonth() + 1,
@@ -29,12 +37,6 @@ export default function GastosPage() {
   const { entries, loading, refetch, deleteGasto } = useGastos(period.year, period.month);
   const { entries: gastosAnterior } = useGastos(prevMonth.year, prevMonth.month);
   const { preferences } = useUserPreferences();
-
-  useEffect(() => {
-    const handleMovementUpdated = () => refetch();
-    window.addEventListener("movement-updated", handleMovementUpdated);
-    return () => window.removeEventListener("movement-updated", handleMovementUpdated);
-  }, [refetch]);
 
   const prefs = preferences ?? DEFAULT_PREFERENCES;
 
@@ -81,7 +83,7 @@ export default function GastosPage() {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_2px_12px_rgba(25,28,30,0.06)]">
           <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Total del mes</p>
           <p className="text-2xl font-black font-headline text-error">{formatCurrency(totalMes, prefs)}</p>

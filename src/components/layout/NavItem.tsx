@@ -9,9 +9,10 @@ interface NavItemProps {
   icon: string;
   label: string;
   disabled?: boolean;
+  onClick?: () => void;
 }
 
-export function NavItem({ href, icon, label, disabled = false }: NavItemProps) {
+export function NavItem({ href, icon, label, disabled = false, onClick }: NavItemProps) {
   const pathname = usePathname();
   const isActive = pathname === href || pathname.startsWith(href + "/");
 
@@ -27,6 +28,7 @@ export function NavItem({ href, icon, label, disabled = false }: NavItemProps) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={cn(
         "flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm",
         isActive

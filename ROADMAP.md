@@ -1,7 +1,9 @@
 # ROADMAP.md — Control Financiero
 
 Hoja de ruta para la construcción completa de la app.  
-Stack: **Next.js 14 (App Router) · TypeScript · Tailwind CSS · shadcn/ui · Supabase · Vercel**
+Stack: **Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · shadcn/ui · Firebase · Vercel**
+
+> **Nota:** El stack original planificaba Supabase. La implementación usó Firebase (Auth + Firestore) en su lugar. Las referencias a Supabase en las tareas completadas son equivalentes con Firebase.
 
 ---
 
@@ -9,8 +11,8 @@ Stack: **Next.js 14 (App Router) · TypeScript · Tailwind CSS · shadcn/ui · S
 
 | Fase | Nombre | Objetivo | Estado |
 |---|---|---|---|
-| 0 | Fundaciones | Setup del proyecto, diseño y base de datos | ⬜ Pendiente |
-| 1 | MVP | Auth + Layout + Ingresos + Gastos + Dashboard básico | ⬜ Pendiente |
+| 0 | Fundaciones | Setup del proyecto, diseño y base de datos | ✅ Completa |
+| 1 | MVP | Auth + Layout + Ingresos + Gastos + Dashboard básico | ✅ Completa |
 | 2 | Core V2 | Presupuesto + Seguimiento + Regla 50/30/20 | ⬜ Pendiente |
 | 3 | Core V3 | Objetivos de ahorro + Exportación + Configuración completa | ⬜ Pendiente |
 | 4 | Polish | Gráficas reales + Dark mode + Testing + Optimización | ⬜ Pendiente |
@@ -23,7 +25,7 @@ Stack: **Next.js 14 (App Router) · TypeScript · Tailwind CSS · shadcn/ui · S
 
 ---
 
-### 0.1 Inicialización del Proyecto
+### ✅ 0.1 Inicialización del Proyecto
 
 **Qué hacer:**
 - Crear proyecto Next.js 14 con App Router y TypeScript
@@ -66,7 +68,7 @@ import { Inter, Manrope } from 'next/font/google'
 
 ---
 
-### 0.2 Conexión con Supabase
+### ✅ 0.2 Conexión con Base de Datos
 
 **Qué hacer:**
 - Crear proyecto en Supabase
@@ -94,7 +96,7 @@ SUPABASE_SERVICE_ROLE_KEY=...   # solo server-side
 
 ---
 
-### 0.3 Esquema de Base de Datos
+### ✅ 0.3 Esquema de Base de Datos
 
 **Qué hacer:**
 - Crear todas las tablas en Supabase según el modelo de datos de `FUNCTIONALITIES.md` §15
@@ -129,7 +131,7 @@ USING (user_id = auth.uid());
 
 ---
 
-### 0.4 Deploy Inicial en Vercel
+### ✅ 0.4 Deploy Inicial en Vercel
 
 **Qué hacer:**
 - Conectar el repositorio GitHub con Vercel
@@ -150,7 +152,7 @@ USING (user_id = auth.uid());
 
 ---
 
-### 0.5 Estructura de Carpetas
+### ✅ 0.5 Estructura de Carpetas
 
 ```
 src/
@@ -206,7 +208,7 @@ src/
 
 ---
 
-### 1.1 Autenticación
+### ✅ 1.1 Autenticación
 
 **Qué hacer:**
 - Pantalla de Login con email + contraseña y botón Google
@@ -249,7 +251,7 @@ FOR EACH ROW EXECUTE PROCEDURE handle_new_user();
 
 ---
 
-### 1.2 Layout Principal (Sidebar + TopNavBar)
+### ✅ 1.2 Layout Principal (Sidebar + TopNavBar)
 
 **Qué hacer:**
 - Sidebar glassmorphism con navegación y CTA "Nuevo Movimiento"
@@ -273,7 +275,7 @@ FOR EACH ROW EXECUTE PROCEDURE handle_new_user();
 
 ---
 
-### 1.3 Gestión de Ingresos
+### ✅ 1.3 Gestión de Ingresos
 
 **Qué hacer:**
 - Pantalla `/ingresos` con tabla de movimientos, filtros y modal de añadir/editar
@@ -305,7 +307,7 @@ calcularVariacionMensual(mesActual: number, mesAnterior: number): number
 
 ---
 
-### 1.4 Gestión de Gastos
+### ✅ 1.4 Gestión de Gastos
 
 **Qué hacer:**
 - Pantalla `/gastos` — reutiliza `MovementsTable` con tipo `expense`
@@ -337,7 +339,7 @@ calcularPorcentajePorSubcategoria(gastos: ExpenseEntry[]): Record<string, number
 
 ---
 
-### 1.5 Dashboard Básico (MVP)
+### ✅ 1.5 Dashboard Básico (MVP)
 
 **Qué hacer:**
 - Pantalla `/dashboard` con los KPIs reales calculados desde los datos
@@ -369,7 +371,7 @@ calcularVariacionMensual(actual: KPIs, anterior: KPIs): Variaciones
 
 ---
 
-### 1.6 Configuración Básica (MVP)
+### ✅ 1.6 Configuración Básica (MVP)
 
 **Qué hacer:**
 - Pantalla `/configuracion` con las pestañas de Perfil y Moneda

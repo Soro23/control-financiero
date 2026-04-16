@@ -115,13 +115,28 @@ function findMatchingSubcategory(text: string): string {
 
 export function parseBBVAExcel(file: ArrayBuffer): ParsedMovement[] {
   const workbook = XLSX.read(file, { type: "array", cellDates: true });
-  const sheetName = workbook.SheetNames[0];
+  
+  // Find the right sheet - look for one with "Importe" or "Movimiento"
+  let sheetName = workbook.SheetNames[0];
+  for (const name of workbook.SheetNames) {
+    const ws = workbook.Sheets[name];
+    const data = XLSX.utils.sheet_to_json(ws, { header: 1 }) as (string | number | null)[][];
+    const hasImporte = data.some(row => row?.some(cell => String(cell ?? "").toLowerCase().includes("importe")));
+    if (hasImporte) {
+      sheetName = name;
+      break;
+    }
+  }
+  
+  console.log("Available sheets:", workbook.SheetNames);
+  console.log("Using sheet:", sheetName);
+  
   const worksheet = workbook.Sheets[sheetName];
   const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as (string | number | null)[][];
   
   // Debug output
-  console.log("Excel rows:", data.length);
-  console.log("First rows:", data.slice(0, 7).map(r => r.slice(1, 6)));
+  console.log("Excel rows:", data.length, "cols:", data[5]?.length);
+  console.log("Sample row[5]:", data[5]);
   
   const movements: ParsedMovement[] = [];
   
@@ -141,37 +156,36 @@ export function parseBBVAExcel(file: ArrayBuffer): ParsedMovement[] {
   
   for (let i = startIndex; i < data.length; i++) {
     const row = data[i];
-    if (!row || row.length < 6) continue;
+    if (!row || row.length < 4) continue;
     
-    const colB = String(row[1] ?? "").trim();
-    const colC = String(row[2] ?? "").trim();
-    const colD = String(row[3] ?? "").trim();
-    const colE = String(row[4] ?? "").trim();
-    const colF = row[5];
-    const colJ = row[9] ? String(row[9]).trim() : "";
+    // Find which columns have data
+    const colFecha = String(row[0] ?? row[1] ?? "").trim();
+    const colConcepto = String(row[1] ?? row[2] ?? "").trim();
+    const colTipo = String(row[2] ?? row[3] ?? "").trim();
+    const colImporte = row[3] ?? row[4];
+    const colObs = row[4] ? String(row[4]).trim() : "";
     
     // Skip header rows and empty rows
-    if (!colF || typeof colF !== "number") continue;
-    if (colB.toLowerCase() === "importe" || colD.toLowerCase() === "concepto") continue;
+    if (!colImporte || typeof colImporte !== "number") continue;
+    if (colFecha.toLowerCase() === "importe" || colConcepto.toLowerCase() === "concepto") continue;
+    if (colFecha.toLowerCase().includes("fecha") && colConcepto.toLowerCase().includes("concepto")) continue;
     
-    const isIncome = colF > 0;
-    const { category, subcategory } = findMatchingCategory(colD, colJ, isIncome);
+    const isIncome = colImporte > 0;
+    const { category, subcategory } = findMatchingCategory(colConcepto, colObs, isIncome);
     
     let fechaFormateada: string;
-    if (colB && colB.includes("/")) {
-      fechaFormateada = colB;
-    } else if (colC && colC.includes("/")) {
-      fechaFormateada = colC;
+    if (colFecha && colFecha.includes("/")) {
+      fechaFormateada = colFecha;
     } else {
-      fechaFormateada = colB || colC || "";
+      fechaFormateada = colFecha;
     }
     
     movements.push({
       fecha: fechaFormateada,
-      concepto: colD || "Sin concepto",
-      tipo: colE || "Otros",
-      importe: colF,
-      observaciones: colJ,
+      concepto: colConcepto || "Sin concepto",
+      tipo: colTipo || "Otros",
+      importe: colImporte,
+      observaciones: colObs,
       categoriaSugerida: category,
       subcategoriaSugerida: subcategory,
     });

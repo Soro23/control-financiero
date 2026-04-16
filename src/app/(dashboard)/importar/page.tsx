@@ -25,6 +25,8 @@ export default function ImportarPage() {
   const [targetYear, setTargetYear] = useState<number>(new Date().getFullYear());
   const [importType, setImportType] = useState<"expense" | "income">("expense");
   const [categories, setCategories] = useState<CategoryInfo[]>([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const ITEMS_PER_PAGE = 15;
 
   const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,6 +41,7 @@ export default function ImportarPage() {
         categoryId: "",
       }));
       setMovements(withCategories);
+      setCurrentPage(0);
       toast.success(`${parsed.length} movimientos detectados`);
     } catch (error) {
       console.error("Error parsing file:", error);
@@ -74,6 +77,7 @@ export default function ImportarPage() {
     if (!userId) return;
     loadCategoriesForType(userId, importType).then((cats) => {
       setCategories(cats);
+      setCurrentPage(0);
     });
   }, [userId, importType]);
 
@@ -271,38 +275,74 @@ export default function ImportarPage() {
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-sm font-semibold">Vista previa</h3>
-              <div className="max-h-96 overflow-y-auto space-y-2">
-                {movements.slice(0, 20).map((m, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 p-3 bg-surface-container rounded-lg text-sm"
-                  >
-                    <span className={`font-bold w-16 ${m.importe > 0 ? "text-success" : "text-error"}`}>
-                      {m.importe > 0 ? "+" : ""}{formatCurrency(m.importe, DEFAULT_PREFERENCES)}
-                    </span>
-                    <span className="w-20 text-on-surface-variant">{m.fecha}</span>
-                    <span className="flex-1 truncate">{m.concepto}</span>
-                    <select
-                      value={m.categoryId || getCategoryId(m.categoriaSugerida)}
-                      onChange={(e) => updateMovementCategory(i, e.target.value)}
-                      className="text-xs bg-surface-container-lowest px-2 py-1 rounded border border-outline-variant/20"
-                    >
-                      <option value="">Sin categoría</option>
-                      {categories.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                ))}
-                {movements.length > 20 && (
-                  <p className="text-sm text-on-surface-variant text-center py-2">
-                    ... y {movements.length - 20} más
-                  </p>
-                )}
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold">Vista previa</h3>
+                <span className="text-xs text-on-surface-variant">
+                  Página {currentPage + 1} de {Math.ceil(movements.length / ITEMS_PER_PAGE)}
+                </span>
               </div>
+              <div className="space-y-2">
+                {movements.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE).map((m, i) => {
+                  const actualIndex = currentPage * ITEMS_PER_PAGE + i;
+                  return (
+                    <div
+                      key={actualIndex}
+                      className="flex items-center gap-3 p-3 bg-surface-container rounded-lg text-sm"
+                    >
+                      <span className={`font-bold w-16 ${m.importe > 0 ? "text-success" : "text-error"}`}>
+                        {m.importe > 0 ? "+" : ""}{formatCurrency(m.importe, DEFAULT_PREFERENCES)}
+                      </span>
+                      <span className="w-20 text-on-surface-variant">{m.fecha}</span>
+                      <span className="flex-1 truncate">{m.concepto}</span>
+                      <select
+                        value={m.categoryId || getCategoryId(m.categoriaSugerida)}
+                        onChange={(e) => updateMovementCategory(actualIndex, e.target.value)}
+                        className="text-xs bg-surface-container-lowest px-2 py-1 rounded border border-outline-variant/20"
+                      >
+                        <option value="">Sin categoría</option>
+                        {categories.map((cat) => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {/* Pagination controls */}
+              {movements.length > ITEMS_PER_PAGE && (
+                <div className="flex items-center justify-center gap-2 pt-2">
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
+                    disabled={currentPage === 0}
+                    className="px-3 py-1 rounded-lg text-sm bg-surface-container disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Anterior
+                  </button>
+                  {Array.from({ length: Math.ceil(movements.length / ITEMS_PER_PAGE) }, (_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i)}
+                      className={`px-3 py-1 rounded-lg text-sm ${
+                        currentPage === i
+                          ? "bg-primary text-on-primary"
+                          : "bg-surface-container"
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(Math.ceil(movements.length / ITEMS_PER_PAGE) - 1, p + 1))}
+                    disabled={currentPage >= Math.ceil(movements.length / ITEMS_PER_PAGE) - 1}
+                    className="px-3 py-1 rounded-lg text-sm bg-surface-container disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              )}
             </div>
 
             <button

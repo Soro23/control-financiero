@@ -64,14 +64,23 @@ export default function ImportarPage() {
   }, [importType]);
 
   const loadCategoriesForType = useCallback(async (uid: string, type: "expense" | "income") => {
-    const col = type === "expense" ? "expense_categories" : "income_categories";
+    // Use single categories collection, filter by type in memory
+    const col = "categories";
     console.log("Querying collection:", col);
     const q = query(collection(db, "users", uid, col));
     const snapshot = await getDocs(q);
     const cats: CategoryInfo[] = [];
     snapshot.forEach((doc) => {
-      console.log("Category doc:", doc.id, doc.data());
-      cats.push({ id: doc.id, name: doc.data().name });
+      const data = doc.data();
+      // Income categories have no ruleBlock (from DEFAULT_INCOME_CATEGORIES)
+      // Expense categories have ruleBlock: "needs" or "wants"
+      const isExpense = data.ruleBlock === "needs" || data.ruleBlock === "wants";
+      const isIncome = data.ruleBlock === undefined;
+      
+      if (type === "expense" ? isExpense : isIncome) {
+        console.log("Category doc:", doc.id, doc.data());
+        cats.push({ id: doc.id, name: doc.data().name });
+      }
     });
     return cats;
   }, []);

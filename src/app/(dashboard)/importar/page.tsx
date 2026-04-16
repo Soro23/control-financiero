@@ -65,10 +65,12 @@ export default function ImportarPage() {
 
   const loadCategoriesForType = useCallback(async (uid: string, type: "expense" | "income") => {
     const col = type === "expense" ? "expense_categories" : "income_categories";
+    console.log("Querying collection:", col);
     const q = query(collection(db, "users", uid, col));
     const snapshot = await getDocs(q);
     const cats: CategoryInfo[] = [];
     snapshot.forEach((doc) => {
+      console.log("Category doc:", doc.id, doc.data());
       cats.push({ id: doc.id, name: doc.data().name });
     });
     return cats;
@@ -85,9 +87,11 @@ export default function ImportarPage() {
   // Load categories when userId or importType changes
   useEffect(() => {
     if (!userId) return;
+    console.log("Loading categories for user:", userId, "type:", importType);
     loadCategoriesForType(userId, importType).then((cats) => {
+      console.log("Categories loaded:", cats.length, cats.map(c => c.name));
       setCategories(cats);
-    });
+    }).catch(err => console.error("Error loading categories:", err));
   }, [userId, importType]);
 
   // Map movements to categories when both are available

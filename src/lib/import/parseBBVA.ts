@@ -165,10 +165,25 @@ export function parseBBVAExcel(file: ArrayBuffer): ParsedMovement[] {
     const colImporte = row[3] ?? row[4];
     const colObs = row[4] ? String(row[4]).trim() : "";
     
+    console.log(`Row ${i}: fecha="${colFecha}" concepto="${colConcepto}" tipo="${colTipo}" importe=${colImporte} typeof=${typeof colImporte}`);
+    
     // Skip header rows and empty rows
-    if (!colImporte || typeof colImporte !== "number") continue;
-    if (colFecha.toLowerCase() === "importe" || colConcepto.toLowerCase() === "concepto") continue;
-    if (colFecha.toLowerCase().includes("fecha") && colConcepto.toLowerCase().includes("concepto")) continue;
+    if (!colImporte) {
+      console.log(`Row ${i}: skipping - no importe`);
+      continue;
+    }
+    if (typeof colImporte !== "number") {
+      console.log(`Row ${i}: skipping - not a number, is ${typeof colImporte}`);
+      continue;
+    }
+    if (colFecha === "Fecha" || colConcepto === "Concepto") {
+      console.log(`Row ${i}: skipping - header row`);
+      continue;
+    }
+    if (colFecha.toLowerCase().includes("fecha") && colConcepto.toLowerCase().includes("concepto")) {
+      console.log(`Row ${i}: skipping - header-like row`);
+      continue;
+    }
     
     const isIncome = colImporte > 0;
     const { category, subcategory } = findMatchingCategory(colConcepto, colObs, isIncome);

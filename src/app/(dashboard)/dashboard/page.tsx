@@ -19,23 +19,29 @@ import { formatCurrency, DEFAULT_PREFERENCES } from "@/lib/utils/formatCurrency"
 import { formatDate } from "@/lib/utils/formatDate";
 import type { MonthYear, Category } from "@/types";
 
-const CashFlowChart = dynamic(() => import("@/components/dashboard/CashFlowChart"), {
-  ssr: false,
-  loading: () => (
-    <div className="h-56 animate-pulse bg-surface-container-low rounded-2xl flex items-center justify-center text-sm text-on-surface-variant">
-      Cargando gráfica...
-    </div>
-  ),
-});
+const CashFlowChart = dynamic(
+  () => import("@/components/dashboard/CashFlowChart").then((mod) => mod.CashFlowChart),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-56 animate-pulse bg-surface-container-low rounded-2xl flex items-center justify-center text-sm text-on-surface-variant">
+        Cargando gráfica...
+      </div>
+    ),
+  }
+);
 
-const ExpenseDonutChart = dynamic(() => import("@/components/dashboard/ExpenseDonutChart"), {
-  ssr: false,
-  loading: () => (
-    <div className="h-56 animate-pulse bg-surface-container-low rounded-2xl flex items-center justify-center text-sm text-on-surface-variant">
-      Cargando gráfica...
-    </div>
-  ),
-});
+const ExpenseDonutChart = dynamic(
+  () => import("@/components/dashboard/ExpenseDonutChart").then((mod) => mod.ExpenseDonutChart),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-56 animate-pulse bg-surface-container-low rounded-2xl flex items-center justify-center text-sm text-on-surface-variant">
+        Cargando gráfica...
+      </div>
+    ),
+  }
+);
 
 export default function DashboardPage() {
   const now = new Date();

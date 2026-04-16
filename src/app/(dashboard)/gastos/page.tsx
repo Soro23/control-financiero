@@ -109,19 +109,19 @@ function GastosContent() {
         </div>
         <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_2px_12px_rgba(25,28,30,0.06)]">
           <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Movimientos</p>
-          <p className="text-2xl font-black font-headline text-slate-900">{entries.length}</p>
+          <p className="text-2xl font-black font-headline text-slate-900">{filteredEntries.length}</p>
           <p className="text-xs text-on-surface-variant mt-1">registros este mes</p>
         </div>
         <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_2px_12px_rgba(25,28,30,0.06)]">
           <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Mayor gasto</p>
           <p className="text-2xl font-black font-headline text-slate-900">
-            {entries.length > 0
-              ? formatCurrency(Math.max(...entries.map((e) => e.amount)), prefs)
+            {filteredEntries.length > 0
+              ? formatCurrency(Math.max(...filteredEntries.map((e) => e.amount)), prefs)
               : "—"}
           </p>
           <p className="text-xs text-on-surface-variant mt-1">
-            {entries.length > 0
-              ? entries.reduce((max, e) => e.amount > max.amount ? e : max, entries[0]).concept
+            {filteredEntries.length > 0
+              ? filteredEntries.reduce((max, e) => e.amount > max.amount ? e : max, filteredEntries[0]).concept
               : "Sin datos"}
           </p>
         </div>

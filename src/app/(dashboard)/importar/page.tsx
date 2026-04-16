@@ -24,6 +24,7 @@ export default function ImportarPage() {
   const [targetMonth, setTargetMonth] = useState<number>(new Date().getMonth() + 1);
   const [targetYear, setTargetYear] = useState<number>(new Date().getFullYear());
   const [importType, setImportType] = useState<"expense" | "income" | "both">("expense");
+  const [filterType, setFilterType] = useState<"expense" | "income" | "both">("expense");
   const [categories, setCategories] = useState<CategoryInfo[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const ITEMS_PER_PAGE = 15;
@@ -257,9 +258,16 @@ export default function ImportarPage() {
 
   const incomeCount = movements.filter(m => m.importe > 0).length;
   const expenseCount = movements.filter(m => m.importe < 0).length;
-  const currentCount = importType === "expense" ? expenseCount : incomeCount;
+  const currentCount = importType === "expense" ? expenseCount : importType === "income" ? incomeCount : expenseCount + incomeCount;
   const totalIncome = movements.filter(m => m.importe > 0).reduce((sum, m) => sum + m.importe, 0);
   const totalExpense = movements.filter(m => m.importe < 0).reduce((sum, m) => sum + Math.abs(m.importe), 0);
+
+  // Filter movements for display based on filterType
+  const filteredMovements = filterType === "expense" 
+    ? movements.filter(m => m.importe < 0)
+    : filterType === "income" 
+      ? movements.filter(m => m.importe > 0)
+      : movements;
 
   return (
     <div className="py-8 space-y-6">
@@ -293,9 +301,9 @@ export default function ImportarPage() {
             <div className="flex flex-wrap gap-4 items-center">
               <div className="flex gap-2">
                 <button
-                  onClick={() => setImportType("expense")}
+                  onClick={() => { setFilterType("expense"); setImportType("expense"); setCurrentPage(0); }}
                   className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
-                    importType === "expense"
+                    filterType === "expense"
                       ? "bg-error text-white"
                       : "bg-surface-container text-on-surface"
                   }`}
@@ -303,9 +311,9 @@ export default function ImportarPage() {
                   Gastos ({expenseCount})
                 </button>
                 <button
-                  onClick={() => setImportType("income")}
+                  onClick={() => { setFilterType("income"); setImportType("income"); setCurrentPage(0); }}
                   className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
-                    importType === "income"
+                    filterType === "income"
                       ? "bg-success text-white"
                       : "bg-surface-container text-on-surface"
                   }`}
@@ -313,9 +321,9 @@ export default function ImportarPage() {
                   Ingresos ({incomeCount})
                 </button>
                 <button
-                  onClick={() => setImportType("both")}
+                  onClick={() => { setFilterType("both"); setImportType("both"); setCurrentPage(0); }}
                   className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
-                    importType === "both"
+                    filterType === "both"
                       ? "bg-primary text-white"
                       : "bg-surface-container text-on-surface"
                   }`}
@@ -352,7 +360,7 @@ export default function ImportarPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-surface-container rounded-xl p-4">
                 <p className="text-xs font-semibold text-on-surface-variant uppercase">Movimientos</p>
-                <p className="text-2xl font-black font-headline">{movements.length}</p>
+                <p className="text-2xl font-black font-headline">{filteredMovements.length}</p>
               </div>
               <div className="bg-surface-container rounded-xl p-4">
                 <p className="text-xs font-semibold text-on-surface-variant uppercase">Ingresos</p>
@@ -372,11 +380,11 @@ export default function ImportarPage() {
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold">Vista previa</h3>
                 <span className="text-xs text-on-surface-variant">
-                  Página {currentPage + 1} de {Math.ceil(movements.length / ITEMS_PER_PAGE)}
+                  Página {currentPage + 1} de {Math.ceil(filteredMovements.length / ITEMS_PER_PAGE) || 1}
                 </span>
               </div>
               <div className="space-y-2">
-                {movements.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE).map((m, i) => {
+                {filteredMovements.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE).map((m, i) => {
                   const actualIndex = currentPage * ITEMS_PER_PAGE + i;
                   return (
                     <div
@@ -406,7 +414,7 @@ export default function ImportarPage() {
               </div>
               
               {/* Pagination controls */}
-              {movements.length > ITEMS_PER_PAGE && (
+              {filteredMovements.length > ITEMS_PER_PAGE && (
                 <div className="flex items-center justify-center gap-2 pt-2">
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
@@ -415,7 +423,7 @@ export default function ImportarPage() {
                   >
                     Anterior
                   </button>
-                  {Array.from({ length: Math.ceil(movements.length / ITEMS_PER_PAGE) }, (_, i) => (
+                  {Array.from({ length: Math.ceil(filteredMovements.length / ITEMS_PER_PAGE) }, (_, i) => (
                     <button
                       key={i}
                       onClick={() => setCurrentPage(i)}
@@ -429,8 +437,8 @@ export default function ImportarPage() {
                     </button>
                   ))}
                   <button
-                    onClick={() => setCurrentPage((p) => Math.min(Math.ceil(movements.length / ITEMS_PER_PAGE) - 1, p + 1))}
-                    disabled={currentPage >= Math.ceil(movements.length / ITEMS_PER_PAGE) - 1}
+                    onClick={() => setCurrentPage((p) => Math.min(Math.ceil(filteredMovements.length / ITEMS_PER_PAGE) - 1, p + 1))}
+                    disabled={currentPage >= Math.ceil(filteredMovements.length / ITEMS_PER_PAGE) - 1}
                     className="px-3 py-1 rounded-lg text-sm bg-surface-container disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Siguiente

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase/client";
 import { NavItem } from "./NavItem";
 import { MovementModal } from "@/components/movements/MovementModal";
@@ -26,13 +26,8 @@ interface SidebarProps {
 export function Sidebar({ isOpen = false, onClose, onAlertsClick }: SidebarProps) {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [configMenuOpen, setConfigMenuOpen] = useState(false);
   const [user, setUser] = useState<{ name?: string; email?: string } | null>(null);
   const { unreadCount } = useAlerts();
-  
-  const userMenuRef = useRef<HTMLDivElement>(null);
-  const configMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -41,26 +36,8 @@ export function Sidebar({ isOpen = false, onClose, onAlertsClick }: SidebarProps
     return unsub;
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setUserMenuOpen(false);
-      }
-      if (configMenuRef.current && !configMenuRef.current.contains(event.target as Node)) {
-        setConfigMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const handleMovementSaved = () => {
     window.dispatchEvent(new CustomEvent("movement-updated"));
-  };
-
-  const handleSignOut = async () => {
-    await signOut(auth);
-    router.push("/login");
   };
 
   const name = typeof user?.name === "string" ? user.name : null;
@@ -92,7 +69,7 @@ export function Sidebar({ isOpen = false, onClose, onAlertsClick }: SidebarProps
           </p>
         </div>
 
-        <nav className="flex-1 space-y-1">
+        <nav className="flex-1 min-h-0 space-y-1">
           {NAV_LINKS.map((link) => (
             <NavItem key={link.href} {...link} onClick={onClose} />
           ))}
@@ -125,75 +102,20 @@ export function Sidebar({ isOpen = false, onClose, onAlertsClick }: SidebarProps
               )}
             </button>
 
-            {/* User dropdown */}
-            <div className="relative flex-1" ref={userMenuRef}>
+            {/* User initials & Settings */}
+            <div className="flex items-center gap-2">
               <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-surface-container-low transition-colors"
+                onClick={() => router.push("/configuracion")}
+                className="p-2 rounded-xl hover:bg-surface-container-low transition-colors"
+                aria-label="Configuración"
               >
-                <div className="w-9 h-9 rounded-full bg-primary-fixed text-primary font-bold text-xs flex items-center justify-center">
-                  {initials}
-                </div>
-                <div className="flex-1 text-left min-w-0">
-                  <p className="text-sm font-medium text-on-surface truncate">
-                    {name || "Usuario"}
-                  </p>
-                  <p className="text-xs text-on-surface-variant truncate">{emailDisplay}</p>
-                </div>
-                <span className="material-symbols-outlined text-[18px] text-on-surface-variant">
-                  expand_more
+                <span className="material-symbols-outlined text-[22px] text-on-surface-variant">
+                  settings
                 </span>
               </button>
-
-              {userMenuOpen && (
-                <div className="absolute bottom-full left-0 right-0 mb-2 bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant/20 overflow-hidden">
-                  <div className="relative" ref={configMenuRef}>
-                    <button
-                      onClick={() => setConfigMenuOpen(!configMenuOpen)}
-                      className="w-full flex items-center justify-between p-3 hover:bg-surface-container-low transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="material-symbols-outlined text-[18px] text-on-surface-variant">
-                          settings
-                        </span>
-                        <span className="text-sm text-on-surface">Configuración</span>
-                      </div>
-                      <span className="material-symbols-outlined text-[16px] text-on-surface-variant">
-                        chevron_right
-                      </span>
-                    </button>
-
-                    {configMenuOpen && (
-                      <div className="absolute left-full bottom-0 ml-2 w-48 bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant/20 overflow-hidden">
-                        <button
-                          onClick={() => {
-                            router.push("/configuracion");
-                            setConfigMenuOpen(false);
-                            setUserMenuOpen(false);
-                          }}
-                          className="w-full flex items-center gap-3 p-3 hover:bg-surface-container-low transition-colors"
-                        >
-                          <span className="material-symbols-outlined text-[18px] text-on-surface-variant">
-                            tune
-                          </span>
-                          <span className="text-sm text-on-surface">Preferencias</span>
-                        </button>
-                        <button
-                          onClick={() => {
-                            handleSignOut();
-                            setConfigMenuOpen(false);
-                            setUserMenuOpen(false);
-                          }}
-                          className="w-full flex items-center gap-3 p-3 hover:bg-surface-container-low transition-colors text-error"
-                        >
-                          <span className="material-symbols-outlined text-[18px]">logout</span>
-                          <span className="text-sm">Cerrar sesión</span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
+              <div className="w-9 h-9 rounded-full bg-primary-fixed text-primary font-bold text-xs flex items-center justify-center">
+                {initials}
+              </div>
             </div>
           </div>
         </div>

@@ -38,25 +38,16 @@ export default function ConfiguracionPage() {
   const router = useRouter();
 
   // Perfil
-  const [name, setName] = useState("");
+  const [name, setName] = useState(preferences?.name ?? "");
   const [email, setEmail] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
 
   // Moneda
-  const [currency, setCurrency] = useState("EUR");
-  const [currencySymbol, setCurrencySymbol] = useState("€");
-  const [symbolPosition, setSymbolPosition] = useState<"before" | "after">("after");
-  const [decimalFormat, setDecimalFormat] = useState<"comma" | "dot">("comma");
+  const [currency, setCurrency] = useState(preferences?.currency ?? "EUR");
+  const [currencySymbol, setCurrencySymbol] = useState(preferences?.currency_symbol ?? "€");
+  const [symbolPosition, setSymbolPosition] = useState<"before" | "after">(preferences?.symbol_position ?? "after");
+  const [decimalFormat, setDecimalFormat] = useState<"comma" | "dot">(preferences?.decimal_format ?? "comma");
   const [savingCurrency, setSavingCurrency] = useState(false);
-
-  useEffect(() => {
-    if (!preferences) return;
-    setName(preferences.name ?? "");
-    setCurrency(preferences.currency);
-    setCurrencySymbol(preferences.currency_symbol);
-    setSymbolPosition(preferences.symbol_position);
-    setDecimalFormat(preferences.decimal_format);
-  }, [preferences]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {

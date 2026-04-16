@@ -42,9 +42,6 @@ export function RuleBar({ label, idealPct, block, color, preferences }: RuleBarP
   const c = COLOR_MAP[color];
   const clampedPct = Math.min(block.pct, 100);
 
-  // Marker position clamped between 5% and 95% to stay visible
-  const markerPct = Math.min(Math.max(block.pct, 0), 100);
-
   return (
     <div className="flex flex-col gap-3">
       {/* Header */}

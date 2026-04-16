@@ -47,13 +47,11 @@ export function CategoryModal({
   const isEdit = !!editCategory;
   const isSubcategory = !!parentCategory;
 
-  const [name, setName] = useState("");
-  const [type, setType] = useState<CategoryType>(defaultType);
-  const [ruleBlock, setRuleBlock] = useState<RuleBlock>(null);
+  const [name, setName] = useState(editCategory?.name ?? "");
+  const [type, setType] = useState<CategoryType>(editCategory?.type ?? defaultType);
+  const [ruleBlock, setRuleBlock] = useState<RuleBlock>(editCategory?.rule_block ?? null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-
-  const { createCategory, updateCategory } = useCategoryMutations(onSuccess);
 
   useEffect(() => {
     if (open) {
@@ -69,6 +67,8 @@ export function CategoryModal({
       setError("");
     }
   }, [open, editCategory, parentCategory, defaultType]);
+
+  const { createCategory, updateCategory } = useCategoryMutations(onSuccess);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -110,7 +110,7 @@ export function CategoryModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} key={editCategory?.id ?? "new"}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>

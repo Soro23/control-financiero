@@ -57,6 +57,7 @@ const movementSchema = z.object({
 });
 
 type MovementFormValues = z.infer<typeof movementSchema>;
+type RecurrenceFrequency = MovementFormValues["recurrence_frequency"];
 
 interface MovementModalProps {
   open: boolean;
@@ -71,6 +72,7 @@ interface MovementModalProps {
     amount: number;
     date: string;
     is_recurring: boolean;
+    recurrence_frequency?: "weekly" | "biweekly" | "monthly" | "bimonthly" | "quarterly" | "yearly";
     notes?: string | null;
     type: "income" | "expense";
   };
@@ -151,7 +153,7 @@ export function MovementModal({
         amount: defaultEntry.amount.toString(),
         date: defaultEntry.date,
         is_recurring: defaultEntry.is_recurring,
-        recurrence_frequency: (defaultEntry as any).recurrence_frequency,
+        recurrence_frequency: defaultEntry.recurrence_frequency,
         notes: defaultEntry.notes || "",
       });
     } else {
@@ -399,7 +401,7 @@ export function MovementModal({
               <div className="pl-7">
                 <Select
                   value={watch("recurrence_frequency") || ""}
-                  onValueChange={(v) => v && setValue("recurrence_frequency", v as any)}
+                  onValueChange={(v) => v && setValue("recurrence_frequency", v as RecurrenceFrequency)}
                 >
                   <SelectTrigger className="bg-surface-container-low border-none rounded-xl focus:ring-primary/20 text-sm">
                     <SelectValue placeholder="Selecciona frecuencia" />

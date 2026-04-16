@@ -1,7 +1,5 @@
 import * as XLSX from "xlsx";
-import type { IncomeEntry, ExpenseEntry, UserPreferences } from "@/types";
-
-type FormatPrefs = Pick<UserPreferences, "currency_symbol" | "symbol_position" | "decimal_format">;
+import type { IncomeEntry, ExpenseEntry } from "@/types";
 
 type ExportType = "ingresos" | "gastos" | "completo";
 
@@ -17,7 +15,7 @@ const MONTH_NAMES = [
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
 ];
 
-function buildIngresosSheet(ingresos: IncomeEntry[], prefs: FormatPrefs) {
+function buildIngresosSheet(ingresos: IncomeEntry[]) {
   const headers = ["Fecha", "Concepto", "Categoría", "Importe", "Recurrente", "Notas"];
   const rows = ingresos.map((e) => [
     e.date,
@@ -34,7 +32,7 @@ function buildIngresosSheet(ingresos: IncomeEntry[], prefs: FormatPrefs) {
   return [headers, ...rows];
 }
 
-function buildGastosSheet(gastos: ExpenseEntry[], prefs: FormatPrefs) {
+function buildGastosSheet(gastos: ExpenseEntry[]) {
   const headers = ["Fecha", "Concepto", "Categoría", "Subcategoría", "Bloque", "Importe", "Recurrente", "Notas"];
   const rows = gastos.map((e) => [
     e.date,
@@ -55,21 +53,20 @@ function buildGastosSheet(gastos: ExpenseEntry[], prefs: FormatPrefs) {
 
 export function exportToXlsx(
   tipo: ExportType,
-  data: ExportData,
-  preferences: FormatPrefs
+  data: ExportData
 ): void {
   const wb = XLSX.utils.book_new();
   const monthLabel = `${MONTH_NAMES[data.month]} ${data.year}`;
 
   if (tipo === "ingresos" || tipo === "completo") {
-    const rows = buildIngresosSheet(data.ingresos ?? [], preferences);
+    const rows = buildIngresosSheet(data.ingresos ?? []);
     const ws = XLSX.utils.aoa_to_sheet(rows);
     ws["!cols"] = [{ wch: 12 }, { wch: 30 }, { wch: 20 }, { wch: 12 }, { wch: 12 }, { wch: 30 }];
     XLSX.utils.book_append_sheet(wb, ws, "Ingresos");
   }
 
   if (tipo === "gastos" || tipo === "completo") {
-    const rows = buildGastosSheet(data.gastos ?? [], preferences);
+    const rows = buildGastosSheet(data.gastos ?? []);
     const ws = XLSX.utils.aoa_to_sheet(rows);
     ws["!cols"] = [{ wch: 12 }, { wch: 30 }, { wch: 20 }, { wch: 20 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 30 }];
     XLSX.utils.book_append_sheet(wb, ws, "Gastos");

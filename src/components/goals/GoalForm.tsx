@@ -45,11 +45,10 @@ export function GoalForm({ open, onOpenChange, goal, onSubmit }: GoalFormProps) 
   const [targetAmount, setTargetAmount] = useState("");
   const [deadline, setDeadline] = useState("");
   const [monthlyContribution, setMonthlyContribution] = useState("");
-  const [icon, setIcon] = useState("savings");
-  const [color, setColor] = useState<SavingGoalFormData["color"]>("secondary");
+  const [icon, setIcon] = useState(goal?.icon ?? "savings");
+  const [color, setColor] = useState<SavingGoalFormData["color"]>(goal?.color ?? "secondary");
   const [saving, setSaving] = useState(false);
 
-  // Init from goal when editing
   useEffect(() => {
     if (goal) {
       setName(goal.name);

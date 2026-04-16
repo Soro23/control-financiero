@@ -4,9 +4,10 @@ import { useAlerts } from "@/hooks/useAlerts";
 import { cn } from "@/lib/utils";
 
 interface AlertsDropdownProps {
-  onClose: () => void;
+  onClose?: () => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function AlertsDropdown({ onClose }: AlertsDropdownProps) {
   const { alerts, loading, markAsRead, markAllAsRead } = useAlerts();
 

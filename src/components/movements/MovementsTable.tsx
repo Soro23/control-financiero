@@ -222,7 +222,7 @@ export function MovementsTable({
             id: editEntry.id,
             concept: editEntry.concept,
             category_id: editEntry.category_id,
-            subcategory_id: type === "expense" ? (editEntry as any).subcategory_id : undefined,
+            subcategory_id: type === "expense" ? (editEntry as ExpenseEntry).subcategory_id ?? undefined : undefined,
             amount: editEntry.amount,
             date: editEntry.date,
             is_recurring: editEntry.is_recurring,

@@ -8,7 +8,6 @@ import {
   getDocs,
   addDoc,
   updateDoc,
-  deleteDoc,
   doc,
   writeBatch,
   limit,

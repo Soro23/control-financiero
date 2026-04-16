@@ -15,10 +15,9 @@ export function TopNavBar({ onMenuClick, showAlerts = false, onAlertsClick }: To
   
   const isIngresosOrGastos = pathname === "/ingresos" || pathname === "/gastos";
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchEnabled, setSearchEnabled] = useState(false);
+  const [searchEnabled] = useState(isIngresosOrGastos);
 
   useEffect(() => {
-    setSearchEnabled(isIngresosOrGastos);
     setSearchQuery("");
   }, [isIngresosOrGastos]);
 

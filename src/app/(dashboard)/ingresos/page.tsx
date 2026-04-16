@@ -74,7 +74,7 @@ function IngresosContent() {
         <div className="flex flex-wrap items-center gap-2 sm:gap-4">
           <MonthSelector value={period} onChange={setPeriod} />
           <button
-            onClick={() => exportToXlsx("ingresos", { ingresos: entries, month: period.month, year: period.year }, prefs)}
+            onClick={() => exportToXlsx("ingresos", { ingresos: entries, month: period.month, year: period.year })}
             disabled={entries.length === 0}
             title="Exportar a Excel"
             className="flex items-center gap-2 bg-surface-container-lowest text-slate-600 px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-container border border-outline-variant/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed"

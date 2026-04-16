@@ -13,7 +13,7 @@
  * The function is idempotent: calling it multiple times never creates duplicates.
  */
 
-import { collection, query, where, getDocs, addDoc, writeBatch, doc } from "firebase/firestore";
+import { collection, query, where, getDocs, writeBatch, doc } from "firebase/firestore";
 import { db } from "./client";
 import { advanceDate, getExpectedDates, type RecurrenceFrequency } from "@/lib/utils/recurring";
 

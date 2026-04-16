@@ -34,7 +34,7 @@ export function useGastos(year: number, month: number) {
   const [entries, setEntries] = useState<ExpenseEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState<boolean>(() => true);
   const [userId, setUserId] = useState<string | null>(null);
   const lastDocRef = useRef<QueryDocumentSnapshot<DocumentData> | null>(null);
   const categoriesCacheRef = useRef<Record<string, DocumentData>>({});

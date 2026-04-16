@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import {
   collection,
   query,
-  where,
   orderBy,
   limit,
   onSnapshot,
@@ -20,7 +19,7 @@ import type { Alert, AlertFormData } from "@/types";
 export function useAlerts() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {

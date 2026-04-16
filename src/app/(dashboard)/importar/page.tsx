@@ -34,11 +34,6 @@ export default function ImportarPage() {
       const arrayBuffer = await file.arrayBuffer();
       const parsed = parseBBVAExcel(arrayBuffer);
       
-      // Debug: Log parsed data
-      console.log("File size:", arrayBuffer.byteLength);
-      console.log("Parsed movements:", parsed.length);
-      console.log("First 3:", parsed.slice(0, 3));
-      
       const withCategories: MovementWithCategory[] = parsed.map((m) => ({
         ...m,
         categoryId: "",
@@ -51,34 +46,15 @@ export default function ImportarPage() {
     }
   }, []);
 
-  const loadCategories = useCallback(async (uid: string) => {
-    const col = importType === "expense" ? "expense_categories" : "income_categories";
-    const q = query(collection(db, "users", uid, col));
-    const snapshot = await getDocs(q);
-    const cats: CategoryInfo[] = [];
-    snapshot.forEach((doc) => {
-      cats.push({ id: doc.id, name: doc.data().name });
-    });
-    setCategories(cats);
-    return cats;
-  }, [importType]);
-
   const loadCategoriesForType = useCallback(async (uid: string, type: "expense" | "income") => {
-    // Use single categories collection, filter by type in memory
-    const col = "categories";
-    console.log("Querying collection:", col);
-    const q = query(collection(db, "users", uid, col));
+    // Use single categories collection, filter by type field
+    const q = query(collection(db, "users", uid, "categories"));
     const snapshot = await getDocs(q);
     const cats: CategoryInfo[] = [];
     snapshot.forEach((doc) => {
       const data = doc.data();
-      // Income categories have no ruleBlock (from DEFAULT_INCOME_CATEGORIES)
-      // Expense categories have ruleBlock: "needs" or "wants"
-      const isExpense = data.ruleBlock === "needs" || data.ruleBlock === "wants";
-      const isIncome = data.ruleBlock === undefined;
-      
-      if (type === "expense" ? isExpense : isIncome) {
-        console.log("Category doc:", doc.id, doc.data());
+      // Filter by type field (expense/income)
+      if (data.type === type) {
         cats.push({ id: doc.id, name: doc.data().name });
       }
     });
@@ -96,11 +72,9 @@ export default function ImportarPage() {
   // Load categories when userId or importType changes
   useEffect(() => {
     if (!userId) return;
-    console.log("Loading categories for user:", userId, "type:", importType);
     loadCategoriesForType(userId, importType).then((cats) => {
-      console.log("Categories loaded:", cats.length, cats.map(c => c.name));
       setCategories(cats);
-    }).catch(err => console.error("Error loading categories:", err));
+    });
   }, [userId, importType]);
 
   // Map movements to categories when both are available

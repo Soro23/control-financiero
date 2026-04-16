@@ -15,6 +15,7 @@ const NAV_LINKS = [
   { href: "/presupuesto", icon: "account_balance_wallet", label: "Presupuesto" },
   { href: "/seguimiento", icon: "monitoring", label: "Seguimiento mensual" },
   { href: "/objetivos", icon: "savings", label: "Objetivos de ahorro" },
+  { href: "/importar", icon: "upload", label: "Importar" },
 ];
 
 interface SidebarProps {

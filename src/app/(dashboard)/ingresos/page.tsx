@@ -10,6 +10,7 @@ import { useUserPreferences } from "@/hooks/useUserPreferences";
 import { calcularTotalMes } from "@/lib/calculations/ingresos";
 import { formatCurrency, DEFAULT_PREFERENCES } from "@/lib/utils/formatCurrency";
 import { exportToXlsx } from "@/lib/export/exportToXlsx";
+import { useRouter } from "next/navigation";
 import type { MonthYear } from "@/types";
 
 export default function IngresosPage() {
@@ -21,6 +22,7 @@ export default function IngresosPage() {
 }
 
 function IngresosContent() {
+  const router = useRouter();
   const now = new Date();
   const [period, setPeriod] = useState<MonthYear>({
     month: now.getMonth() + 1,
@@ -81,6 +83,14 @@ function IngresosContent() {
           >
             <span className="material-symbols-outlined text-[18px]">download</span>
             <span className="hidden sm:inline">Exportar</span>
+          </button>
+          <button
+            onClick={() => router.push("/importar")}
+            title="Importar desde banco"
+            className="flex items-center gap-2 bg-surface-container-lowest text-slate-600 px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-container border border-outline-variant/20 transition-all"
+          >
+            <span className="material-symbols-outlined text-[18px]">upload</span>
+            <span className="hidden sm:inline">Importar</span>
           </button>
           <button
             onClick={() => setModalOpen(true)}

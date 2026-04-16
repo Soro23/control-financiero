@@ -156,34 +156,20 @@ export function parseBBVAExcel(file: ArrayBuffer): ParsedMovement[] {
   
   for (let i = startIndex; i < data.length; i++) {
     const row = data[i];
-    if (!row || row.length < 4) continue;
+    if (!row || row.length < 5) continue;
     
-    // Find which columns have data
-    const colFecha = String(row[0] ?? row[1] ?? "").trim();
-    const colConcepto = String(row[1] ?? row[2] ?? "").trim();
-    const colTipo = String(row[2] ?? row[3] ?? "").trim();
-    const colImporte = row[3] ?? row[4];
-    const colObs = row[4] ? String(row[4]).trim() : "";
-    
-    console.log(`Row ${i}: fecha="${colFecha}" concepto="${colConcepto}" tipo="${colTipo}" importe=${colImporte} typeof=${typeof colImporte}`);
+    // Column mapping based on actual Excel structure:
+    // col0: fecha valor, col1: fecha, col2: concepto, col3: tipo, col4: importe, col5: divisa
+    const colFecha = String(row[0] ?? "").trim();
+    const colConcepto = String(row[2] ?? "").trim();
+    const colTipo = String(row[3] ?? "").trim();
+    const colImporte = row[4];
+    const colObs = row[8] ? String(row[8]).trim() : "";
     
     // Skip header rows and empty rows
-    if (!colImporte) {
-      console.log(`Row ${i}: skipping - no importe`);
-      continue;
-    }
-    if (typeof colImporte !== "number") {
-      console.log(`Row ${i}: skipping - not a number, is ${typeof colImporte}`);
-      continue;
-    }
-    if (colFecha === "Fecha" || colConcepto === "Concepto") {
-      console.log(`Row ${i}: skipping - header row`);
-      continue;
-    }
-    if (colFecha.toLowerCase().includes("fecha") && colConcepto.toLowerCase().includes("concepto")) {
-      console.log(`Row ${i}: skipping - header-like row`);
-      continue;
-    }
+    if (!colImporte) continue;
+    if (typeof colImporte !== "number") continue;
+    if (colConcepto === "Concepto" || colFecha === "Fecha") continue;
     
     const isIncome = colImporte > 0;
     const { category, subcategory } = findMatchingCategory(colConcepto, colObs, isIncome);

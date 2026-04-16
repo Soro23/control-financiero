@@ -57,9 +57,11 @@ src/app/
 │   ├── presupuesto/
 │   ├── seguimiento/
 │   ├── objetivos/   # Objetivos de Ahorro + Regla 50/30/20
-│   └── configuracion/
+│   ├── configuracion/
+│   └── importar/    # importación de movimientos desde Excel BBVA
 ├── api/auth/session/route.ts  # crea la cookie __session para SSR
-└── auth/callback/             # handler OAuth de Google
+├── auth/callback/             # handler OAuth de Google
+└── proxy.ts                   # middleware de auth: redirige sin sesión a /login
 ```
 
 `/ingresos` y `/gastos` comparten `MovementsTable` filtrado por `type`.
@@ -77,6 +79,7 @@ Lib (lib/)
   ├── firebase/         ← client.ts (browser), server.ts (Admin SDK), session.ts, initUserData.ts, recurring.ts
   ├── calculations/     ← funciones puras testeables (ver abajo)
   ├── export/           ← exportToXlsx.ts
+  ├── import/           ← parseBBVA.ts (parse Excel BBVA → ParsedMovement[])
   └── utils/            ← formatCurrency.ts, formatDate.ts, recurring.ts
 ```
 
@@ -123,6 +126,7 @@ Los hooks siguen el patrón: escuchan `onAuthStateChanged` internamente, paginan
 - `useUserPreferences()` — lee y actualiza `preferences/main`
 - `useAlerts()` — lista y marca como leídas las alertas
 - `useMonthlyHistory(months)` — historial para gráficas
+- `useCategoryMutations(onMutate?)` — CRUD de categorías (create, update, delete, toggle); separado de `useCategories` para aislar escrituras
 
 ### Componentes compartidos críticos
 

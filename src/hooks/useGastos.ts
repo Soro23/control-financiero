@@ -15,6 +15,7 @@ import {
   doc,
   DocumentData,
   QueryDocumentSnapshot,
+  getCountFromServer,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase/client";
@@ -36,6 +37,8 @@ export function useGastos(year: number, month: number) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState<boolean>(() => true);
   const [userId, setUserId] = useState<string | null>(null);
+  const [totalMes, setTotalMes] = useState<number>(0);
+  const [totalCount, setTotalCount] = useState<number>(0);
   const lastDocRef = useRef<QueryDocumentSnapshot<DocumentData> | null>(null);
   const categoriesCacheRef = useRef<Record<string, DocumentData>>({});
 
@@ -71,37 +74,27 @@ export function useGastos(year: number, month: number) {
     const catsMap = await fetchCategories(userId);
     const { from, to } = dateRange(year, month);
 
-    let q = query(
+    const allQuery = query(
       collection(db, "users", userId, "expense_entries"),
       where("date", ">=", from),
       where("date", "<=", to),
-      orderBy("date", "desc"),
-      limit(PAGE_SIZE)
+      orderBy("date", "desc")
     );
 
-    if (isLoadMore && lastDocRef.current) {
-      q = query(
-        collection(db, "users", userId, "expense_entries"),
-        where("date", ">=", from),
-        where("date", "<=", to),
-        orderBy("date", "desc"),
-        limit(PAGE_SIZE),
-        startAfter(lastDocRef.current)
-      );
+    const allSnap = await getDocs(allQuery);
+    const totalDocs = allSnap.size;
+    const total = allSnap.docs.reduce((sum, d) => sum + (d.data().amount || 0), 0);
+    setTotalMes(total);
+    setTotalCount(totalDocs);
+
+    const docsToShow = allSnap.docs.slice(0, PAGE_SIZE);
+    const lastDoc = docsToShow[docsToShow.length - 1];
+
+    if (lastDoc) {
+      lastDocRef.current = lastDoc as QueryDocumentSnapshot<DocumentData>;
     }
 
-    const snap = await getDocs(q);
-
-    if (snap.empty) {
-      setHasMore(false);
-      setLoading(false);
-      return;
-    }
-
-    const lastDoc = snap.docs[snap.docs.length - 1];
-    lastDocRef.current = lastDoc;
-
-    const result: ExpenseEntry[] = snap.docs.map((d) => {
+    const result: ExpenseEntry[] = docsToShow.map((d) => {
       const data = d.data();
       return {
         id: d.id,
@@ -120,13 +113,8 @@ export function useGastos(year: number, month: number) {
       };
     });
 
-    if (isLoadMore) {
-      setEntries((prev) => [...prev, ...result]);
-    } else {
-      setEntries(result);
-    }
-
-    setHasMore(snap.docs.length === PAGE_SIZE);
+    setEntries(result);
+    setHasMore(totalDocs > PAGE_SIZE);
     setLoading(false);
   }, [userId, year, month, fetchCategories]);
 
@@ -141,6 +129,8 @@ export function useGastos(year: number, month: number) {
     lastDocRef.current = null;
     categoriesCacheRef.current = {};
     setHasMore(true);
+    setTotalMes(0);
+    setTotalCount(0);
   }, [year, month]);
 
   useEffect(() => {
@@ -195,6 +185,8 @@ export function useGastos(year: number, month: number) {
     loading,
     loadingMore,
     hasMore,
+    totalMes,
+    totalCount,
     refetch: fetchEntries,
     loadMore,
     createGasto,

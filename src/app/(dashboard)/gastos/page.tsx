@@ -36,7 +36,7 @@ function GastosContent() {
     ? { month: 12, year: period.year - 1 }
     : { month: period.month - 1, year: period.year };
 
-  const { entries, loading, loadingMore, hasMore, refetch, loadMore, deleteGasto } = useGastos(period.year, period.month);
+  const { entries, loading, loadingMore, hasMore, totalMes, totalCount, refetch, loadMore, deleteGasto } = useGastos(period.year, period.month);
   const { entries: gastosAnterior } = useGastos(prevMonth.year, prevMonth.month);
   const { preferences } = useUserPreferences();
 
@@ -54,7 +54,10 @@ function GastosContent() {
     );
   }, [entries, searchQuery]);
 
-  const totalMes = calcularTotalMes(filteredEntries);
+  const filteredTotalMes = useMemo(() => {
+    return filteredEntries.reduce((sum, e) => sum + e.amount, 0);
+  }, [filteredEntries]);
+
   const totalAnterior = calcularTotalMes(gastosAnterior);
 
   return (
@@ -64,7 +67,7 @@ function GastosContent() {
         <div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black font-headline text-slate-900 tracking-tight">Gastos</h1>
           <p className="text-sm text-on-surface-variant mt-0.5">
-            {loading ? "Cargando..." : `${filteredEntries.length} movimiento${filteredEntries.length !== 1 ? "s" : ""} · ${formatCurrency(totalMes, prefs)} total`}
+            {loading ? "Cargando..." : `${totalCount} movimiento${totalCount !== 1 ? "s" : ""} · ${formatCurrency(totalMes, prefs)} total`}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-4">
@@ -109,19 +112,19 @@ function GastosContent() {
         </div>
         <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_2px_12px_rgba(25,28,30,0.06)]">
           <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Movimientos</p>
-          <p className="text-2xl font-black font-headline text-slate-900">{filteredEntries.length}</p>
+          <p className="text-2xl font-black font-headline text-slate-900">{totalCount}</p>
           <p className="text-xs text-on-surface-variant mt-1">registros este mes</p>
         </div>
         <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_2px_12px_rgba(25,28,30,0.06)]">
           <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Mayor gasto</p>
           <p className="text-2xl font-black font-headline text-slate-900">
-            {filteredEntries.length > 0
-              ? formatCurrency(Math.max(...filteredEntries.map((e) => e.amount)), prefs)
+            {entries.length > 0
+              ? formatCurrency(Math.max(...entries.map((e) => e.amount)), prefs)
               : "—"}
           </p>
           <p className="text-xs text-on-surface-variant mt-1">
-            {filteredEntries.length > 0
-              ? filteredEntries.reduce((max, e) => e.amount > max.amount ? e : max, filteredEntries[0]).concept
+            {entries.length > 0
+              ? entries.reduce((max, e) => e.amount > max.amount ? e : max, entries[0]).concept
               : "Sin datos"}
           </p>
         </div>

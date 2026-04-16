@@ -23,7 +23,7 @@ export default function ImportarPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [targetMonth, setTargetMonth] = useState<number>(new Date().getMonth() + 1);
   const [targetYear, setTargetYear] = useState<number>(new Date().getFullYear());
-  const [importType, setImportType] = useState<"expense" | "income">("expense");
+  const [importType, setImportType] = useState<"expense" | "income" | "both">("expense");
   const [categories, setCategories] = useState<CategoryInfo[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const ITEMS_PER_PAGE = 15;
@@ -49,15 +49,15 @@ export default function ImportarPage() {
     }
   }, []);
 
-  const loadCategoriesForType = useCallback(async (uid: string, type: "expense" | "income") => {
+  const loadCategoriesForType = useCallback(async (uid: string, type: "expense" | "income" | "both") => {
     // Use single categories collection, filter by type field
     const q = query(collection(db, "users", uid, "categories"));
     const snapshot = await getDocs(q);
     const cats: CategoryInfo[] = [];
     snapshot.forEach((doc) => {
       const data = doc.data();
-      // Filter by type field (expense/income)
-      if (data.type === type) {
+      // Filter by type field - for "both" include both
+      if (type === "both" || data.type === type) {
         cats.push({ id: doc.id, name: doc.data().name });
       }
     });
@@ -114,53 +114,134 @@ export default function ImportarPage() {
     if (!userId || movements.length === 0) return;
 
     setImporting(true);
-    const col = importType === "expense" ? "expense_entries" : "income_entries";
+    
     let imported = 0;
     let skipped = 0;
 
-    const existingHashes = new Set<string>();
-    const existingQ = query(collection(db, "users", userId, col));
-    const existingSnap = await getDocs(existingQ);
-    existingSnap.forEach((d) => {
-      const data = d.data();
-      const hash = generateMovementHash(data.date, data.amount, data.concept);
-      existingHashes.add(hash);
-    });
-
-    for (const m of movements) {
-      const hash = generateMovementHash(m.fecha, m.importe, m.concepto);
+    // Handle "both" case - import expenses and incomes separately
+    if (importType === "both") {
+      const expenseCol = "expense_entries";
+      const incomeCol = "income_entries";
       
-      if (existingHashes.has(hash)) {
-        skipped++;
-        continue;
+      // Get existing hashes for both collections
+      const existingHashes = new Set<string>();
+      const [expenseSnap, incomeSnap] = await Promise.all([
+        getDocs(query(collection(db, "users", userId, expenseCol))),
+        getDocs(query(collection(db, "users", userId, incomeCol)))
+      ]);
+      [...expenseSnap.docs, ...incomeSnap.docs].forEach((d) => {
+        const data = d.data();
+        const hash = generateMovementHash(data.date, data.amount, data.concept);
+        existingHashes.add(hash);
+      });
+
+      // Import expenses
+      for (const m of movements.filter(m => m.importe < 0)) {
+        const hash = generateMovementHash(m.fecha, m.importe, m.concepto);
+        if (existingHashes.has(hash)) { skipped++; continue; }
+        
+        const fechaISO = m.fecha.split("/").length === 3 
+          ? `${m.fecha.split("/")[2]}-${m.fecha.split("/")[1]}-${m.fecha.split("/")[0]}`
+          : new Date().toISOString().split("T")[0];
+        
+        const categoryId = m.categoryId || getCategoryId(m.categoriaSugerida);
+        
+        try {
+          await addDoc(collection(db, "users", userId, expenseCol), {
+            user_id: userId,
+            category_id: categoryId || "otros",
+            subcategory_id: null,
+            concept: m.concepto,
+            amount: Math.abs(m.importe),
+            date: fechaISO,
+            is_recurring: false,
+            notes: m.observaciones || null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
+          imported++;
+        } catch (err) { console.error("Error importing:", err); }
       }
 
-      const fechaParts = m.fecha.split("/");
-      let fechaISO: string;
-      if (fechaParts.length === 3) {
-        fechaISO = `${fechaParts[2]}-${fechaParts[1]}-${fechaParts[0]}`;
-      } else {
-        fechaISO = new Date().toISOString().split("T")[0];
+      // Import incomes
+      for (const m of movements.filter(m => m.importe > 0)) {
+        const hash = generateMovementHash(m.fecha, m.importe, m.concepto);
+        if (existingHashes.has(hash)) { skipped++; continue; }
+        
+        const fechaISO = m.fecha.split("/").length === 3 
+          ? `${m.fecha.split("/")[2]}-${m.fecha.split("/")[1]}-${m.fecha.split("/")[0]}`
+          : new Date().toISOString().split("T")[0];
+        
+        const categoryId = m.categoryId || getCategoryId(m.categoriaSugerida);
+        
+        try {
+          await addDoc(collection(db, "users", userId, incomeCol), {
+            user_id: userId,
+            category_id: categoryId || "ingresos_ocasionales",
+            subcategory_id: null,
+            concept: m.concepto,
+            amount: Math.abs(m.importe),
+            date: fechaISO,
+            is_recurring: false,
+            notes: m.observaciones || null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
+          imported++;
+        } catch (err) { console.error("Error importing:", err); }
       }
+    } else {
+      // Single type import (expense or income)
+      const col = importType === "expense" ? "expense_entries" : "income_entries";
+      
+      const movementsToImport = importType === "expense"
+        ? movements.filter(m => m.importe < 0)
+        : movements.filter(m => m.importe > 0);
 
-      const categoryId = m.categoryId || getCategoryId(m.categoriaSugerida);
+      const existingHashes = new Set<string>();
+      const existingQ = query(collection(db, "users", userId, col));
+      const existingSnap = await getDocs(existingQ);
+      existingSnap.forEach((d) => {
+        const data = d.data();
+        const hash = generateMovementHash(data.date, data.amount, data.concept);
+        existingHashes.add(hash);
+      });
 
-      try {
-        await addDoc(collection(db, "users", userId, col), {
-          user_id: userId,
-          category_id: categoryId || (importType === "expense" ? "otros" : "ingresos_ocasionales"),
-          subcategory_id: null,
-          concept: m.concepto,
-          amount: Math.abs(m.importe),
-          date: fechaISO,
-          is_recurring: false,
-          notes: m.observaciones || null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        });
-        imported++;
-      } catch (err) {
-        console.error("Error importing:", err);
+      for (const m of movementsToImport) {
+        const hash = generateMovementHash(m.fecha, m.importe, m.concepto);
+        
+        if (existingHashes.has(hash)) {
+          skipped++;
+          continue;
+        }
+
+        const fechaParts = m.fecha.split("/");
+        let fechaISO: string;
+        if (fechaParts.length === 3) {
+          fechaISO = `${fechaParts[2]}-${fechaParts[1]}-${fechaParts[0]}`;
+        } else {
+          fechaISO = new Date().toISOString().split("T")[0];
+        }
+
+        const categoryId = m.categoryId || getCategoryId(m.categoriaSugerida);
+
+        try {
+          await addDoc(collection(db, "users", userId, col), {
+            user_id: userId,
+            category_id: categoryId || (importType === "expense" ? "otros" : "ingresos_ocasionales"),
+            subcategory_id: null,
+            concept: m.concepto,
+            amount: Math.abs(m.importe),
+            date: fechaISO,
+            is_recurring: false,
+            notes: m.observaciones || null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
+          imported++;
+        } catch (err) {
+          console.error("Error importing:", err);
+        }
       }
     }
 
@@ -176,6 +257,7 @@ export default function ImportarPage() {
 
   const incomeCount = movements.filter(m => m.importe > 0).length;
   const expenseCount = movements.filter(m => m.importe < 0).length;
+  const currentCount = importType === "expense" ? expenseCount : incomeCount;
   const totalIncome = movements.filter(m => m.importe > 0).reduce((sum, m) => sum + m.importe, 0);
   const totalExpense = movements.filter(m => m.importe < 0).reduce((sum, m) => sum + Math.abs(m.importe), 0);
 
@@ -229,6 +311,16 @@ export default function ImportarPage() {
                   }`}
                 >
                   Ingresos ({incomeCount})
+                </button>
+                <button
+                  onClick={() => setImportType("both")}
+                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                    importType === "both"
+                      ? "bg-primary text-white"
+                      : "bg-surface-container text-on-surface"
+                  }`}
+                >
+                  Ambos ({expenseCount + incomeCount})
                 </button>
               </div>
 

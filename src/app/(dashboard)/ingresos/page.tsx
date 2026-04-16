@@ -34,7 +34,7 @@ function IngresosContent() {
     ? { month: 12, year: period.year - 1 }
     : { month: period.month - 1, year: period.year };
 
-  const { entries, loading, refetch, deleteIngreso } = useIngresos(period.year, period.month);
+  const { entries, loading, loadingMore, hasMore, refetch, loadMore, deleteIngreso } = useIngresos(period.year, period.month);
   const { entries: ingresosAnterior } = useIngresos(prevMonth.year, prevMonth.month);
   const { preferences } = useUserPreferences();
 
@@ -130,6 +130,9 @@ function IngresosContent() {
         preferences={preferences ? { ...preferences, date_format: preferences.date_format } : null}
         onDelete={deleteIngreso}
         onRefresh={refetch}
+        loadMore={loadMore}
+        loadingMore={loadingMore}
+        hasMore={hasMore}
       />
 
       <MovementModal

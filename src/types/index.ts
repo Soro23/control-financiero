@@ -142,11 +142,18 @@ export interface RuleBlock {
   status: "ok" | "warning" | "over";
 }
 
+export interface EmergencyFund {
+  target: number;
+  saved: number;
+  progress: number;
+}
+
 export interface RuleBlocks {
   needs: RuleBlock;
   wants: RuleBlock;
   savings: RuleBlock;
   totalIngresos: number;
+  emergencyFund?: EmergencyFund;
 }
 
 // ─── Insights ────────────────────────────────────────────────
@@ -164,9 +171,11 @@ export interface SavingGoal {
   name: string;
   target_amount: number;
   accumulated: number;
-  deadline: string | null;       // YYYY-MM-DD or null
+  current_amount: number;
+  is_emergency_fund: boolean;
+  deadline: string | null;
   monthly_contribution: number | null;
-  icon: string;                  // Material Symbol name
+  icon: string;
   color: "primary" | "secondary" | "tertiary" | "error";
   created_at: string;
   updated_at: string;
@@ -179,6 +188,7 @@ export interface SavingGoalFormData {
   monthly_contribution?: number;
   icon: string;
   color: "primary" | "secondary" | "tertiary" | "error";
+  is_emergency_fund?: boolean;
 }
 
 export interface GoalCalculations {
@@ -187,4 +197,22 @@ export interface GoalCalculations {
   monthsLeft: number | null;
   estimatedDate: Date | null;
   requiredMonthly: number | null;
+}
+
+// ─── Alerts ─────────────────────────────────────────────
+
+export interface Alert {
+  id: string;
+  user_id: string;
+  type: "budget_over" | "recurring_due" | "goal_reminder" | "emergency_fund" | "system";
+  title: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface AlertFormData {
+  type: Alert["type"];
+  title: string;
+  message: string;
 }

@@ -1,22 +1,27 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   collection,
   query,
   where,
   orderBy,
   limit,
+  startAfter,
   getDocs,
   addDoc,
   updateDoc,
   deleteDoc,
   doc,
+  DocumentData,
+  QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase/client";
 import { backfillRecurringEntries } from "@/lib/firebase/recurring";
 import type { ExpenseEntry, ExpenseFormData } from "@/types";
+
+const PAGE_SIZE = 25;
 
 function dateRange(year: number, month: number) {
   const from = `${year}-${String(month).padStart(2, "0")}-01`;
@@ -28,40 +33,73 @@ function dateRange(year: number, month: number) {
 export function useGastos(year: number, month: number) {
   const [entries, setEntries] = useState<ExpenseEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const lastDocRef = useRef<QueryDocumentSnapshot<DocumentData> | null>(null);
+  const categoriesCacheRef = useRef<Record<string, DocumentData>>({});
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => setUserId(u?.uid ?? null));
     return unsub;
   }, []);
 
-  const fetchEntries = useCallback(async () => {
-    if (!userId) { setLoading(false); return; }
-    setLoading(true);
-
-    // Backfill any recurring entries that should exist up to today
-    // but were not generated at creation time (e.g. monthly entries).
-    await backfillRecurringEntries(userId, "expense_entries");
-
-    const { from, to } = dateRange(year, month);
-
-    const entriesQuery = query(
-      collection(db, "users", userId, "expense_entries"),
-      where("date", ">=", from),
-      where("date", "<=", to),
-      orderBy("date", "desc"),
-      limit(500)
-    );
-    const snap = await getDocs(entriesQuery);
+  const fetchCategories = useCallback(async (uid: string) => {
+    const cached = Object.keys(categoriesCacheRef.current).length > 0;
+    if (cached) return categoriesCacheRef.current;
 
     const catsSnap = await getDocs(
       query(
-        collection(db, "users", userId, "categories"),
+        collection(db, "users", uid, "categories"),
         where("type", "==", "expense"),
         limit(100)
       )
     );
-    const catsMap = Object.fromEntries(catsSnap.docs.map((d) => [d.id, { id: d.id, ...d.data() }]));
+    const map: Record<string, DocumentData> = {};
+    catsSnap.docs.forEach((d) => {
+      map[d.id] = { id: d.id, ...d.data() };
+    });
+    categoriesCacheRef.current = map;
+    return map;
+  }, []);
+
+  const fetchEntries = useCallback(async (isLoadMore = false) => {
+    if (!userId) { setLoading(false); return; }
+    setLoading(true);
+
+    await backfillRecurringEntries(userId, "expense_entries");
+    const catsMap = await fetchCategories(userId);
+    const { from, to } = dateRange(year, month);
+
+    let q = query(
+      collection(db, "users", userId, "expense_entries"),
+      where("date", ">=", from),
+      where("date", "<=", to),
+      orderBy("date", "desc"),
+      limit(PAGE_SIZE)
+    );
+
+    if (isLoadMore && lastDocRef.current) {
+      q = query(
+        collection(db, "users", userId, "expense_entries"),
+        where("date", ">=", from),
+        where("date", "<=", to),
+        orderBy("date", "desc"),
+        limit(PAGE_SIZE),
+        startAfter(lastDocRef.current)
+      );
+    }
+
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      setHasMore(false);
+      setLoading(false);
+      return;
+    }
+
+    const lastDoc = snap.docs[snap.docs.length - 1];
+    lastDocRef.current = lastDoc;
 
     const result: ExpenseEntry[] = snap.docs.map((d) => {
       const data = d.data();
@@ -77,16 +115,33 @@ export function useGastos(year: number, month: number) {
         notes: data.notes ?? null,
         created_at: data.created_at,
         updated_at: data.updated_at ?? data.created_at,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        category: catsMap[data.category_id] as any,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        subcategory: data.subcategory_id ? (catsMap[data.subcategory_id] as any) : undefined,
+        category: catsMap[data.category_id] as ExpenseEntry["category"],
+        subcategory: data.subcategory_id ? (catsMap[data.subcategory_id] as ExpenseEntry["subcategory"]) : undefined,
       };
     });
 
-    setEntries(result);
+    if (isLoadMore) {
+      setEntries((prev) => [...prev, ...result]);
+    } else {
+      setEntries(result);
+    }
+
+    setHasMore(snap.docs.length === PAGE_SIZE);
     setLoading(false);
-  }, [userId, year, month]);
+  }, [userId, year, month, fetchCategories]);
+
+  const loadMore = useCallback(async () => {
+    if (!hasMore || loadingMore) return;
+    setLoadingMore(true);
+    await fetchEntries(true);
+    setLoadingMore(false);
+  }, [hasMore, loadingMore, fetchEntries]);
+
+  useEffect(() => {
+    lastDocRef.current = null;
+    categoriesCacheRef.current = {};
+    setHasMore(true);
+  }, [year, month]);
 
   useEffect(() => {
     async function load() {
@@ -105,6 +160,8 @@ export function useGastos(year: number, month: number) {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });
+      lastDocRef.current = null;
+      categoriesCacheRef.current = {};
       await fetchEntries();
       return true;
     } catch { return false; }
@@ -133,5 +190,15 @@ export function useGastos(year: number, month: number) {
     } catch { return false; }
   }
 
-  return { entries, loading, refetch: fetchEntries, createGasto, updateGasto, deleteGasto };
+  return {
+    entries,
+    loading,
+    loadingMore,
+    hasMore,
+    refetch: fetchEntries,
+    loadMore,
+    createGasto,
+    updateGasto,
+    deleteGasto,
+  };
 }

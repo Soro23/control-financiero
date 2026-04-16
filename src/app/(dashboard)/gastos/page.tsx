@@ -34,7 +34,7 @@ function GastosContent() {
     ? { month: 12, year: period.year - 1 }
     : { month: period.month - 1, year: period.year };
 
-  const { entries, loading, refetch, deleteGasto } = useGastos(period.year, period.month);
+  const { entries, loading, loadingMore, hasMore, refetch, loadMore, deleteGasto } = useGastos(period.year, period.month);
   const { entries: gastosAnterior } = useGastos(prevMonth.year, prevMonth.month);
   const { preferences } = useUserPreferences();
 
@@ -124,6 +124,9 @@ function GastosContent() {
         preferences={preferences ? { ...preferences, date_format: preferences.date_format } : null}
         onDelete={deleteGasto}
         onRefresh={refetch}
+        loadMore={loadMore}
+        loadingMore={loadingMore}
+        hasMore={hasMore}
       />
 
       <MovementModal

@@ -62,6 +62,8 @@ export function useObjetivos() {
       await addDoc(collection(db, "users", userId, "saving_goals"), {
         ...data,
         accumulated: 0,
+        current_amount: 0,
+        is_emergency_fund: data.is_emergency_fund ?? false,
         deadline: data.deadline ?? null,
         monthly_contribution: data.monthly_contribution ?? null,
         created_at: new Date().toISOString(),
@@ -92,8 +94,10 @@ export function useObjetivos() {
     if (!goal) return false;
     try {
       const newAccumulated = goal.accumulated + amount;
+      const newCurrentAmount = goal.current_amount + amount;
       await updateDoc(doc(db, "users", userId, "saving_goals", id), {
         accumulated: newAccumulated,
+        current_amount: newCurrentAmount,
         updated_at: new Date().toISOString(),
       });
       await fetchGoals();

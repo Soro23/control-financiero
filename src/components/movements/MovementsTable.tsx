@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { CategoryBadge } from "@/components/shared/CategoryBadge";
 import { formatCurrency, DEFAULT_PREFERENCES } from "@/lib/utils/formatCurrency";
@@ -17,6 +17,9 @@ interface MovementsTableProps {
   preferences: PrefsSubset | null;
   onDelete: (id: string) => Promise<boolean>;
   onRefresh: () => void;
+  loadMore?: () => Promise<void>;
+  loadingMore?: boolean;
+  hasMore?: boolean;
 }
 
 export function MovementsTable({
@@ -25,13 +28,36 @@ export function MovementsTable({
   preferences,
   onDelete,
   onRefresh,
+  loadMore,
+  loadingMore = false,
+  hasMore = false,
 }: MovementsTableProps) {
   const [editEntry, setEditEntry] = useState<IncomeEntry | ExpenseEntry | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   const prefs = preferences ?? { ...DEFAULT_PREFERENCES, date_format: "DD/MM/YYYY" };
   const total = entries.reduce((sum, e) => sum + e.amount, 0);
+
+  useEffect(() => {
+    if (!loadMore || !hasMore || loadingMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { rootMargin: "100px" }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [loadMore, hasMore, loadingMore]);
 
   async function handleDelete(id: string) {
     setDeletingId(id);
@@ -145,6 +171,32 @@ export function MovementsTable({
           </tbody>
         </table>
         </div>
+
+        {/* Load more trigger */}
+        {loadMore && hasMore && (
+          <div ref={loadMoreRef} className="py-6 text-center">
+            {loadingMore ? (
+              <div className="flex items-center justify-center gap-2 text-on-surface-variant">
+                <span className="material-symbols-outlined animate-spin">sync</span>
+                <span className="text-sm">Cargando más...</span>
+              </div>
+            ) : (
+              <button
+                onClick={loadMore}
+                className="text-sm text-primary hover:underline"
+              >
+                Cargar más
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* End of list indicator */}
+        {!hasMore && entries.length > 0 && (
+          <div className="py-6 text-center text-on-surface-variant text-xs">
+            Fin de la lista
+          </div>
+        )}
       </div>
 
       <ConfirmDialog

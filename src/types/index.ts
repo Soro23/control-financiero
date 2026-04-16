@@ -37,6 +37,8 @@ export interface IncomeEntry {
   amount: number;
   date: string;
   is_recurring: boolean;
+  recurrence_frequency?: RecurrenceFrequency | null;
+  recurrence_end_date?: string | null;
   notes: string | null;
   created_at: string;
   updated_at: string;
@@ -53,6 +55,8 @@ export interface ExpenseEntry {
   amount: number;
   date: string;
   is_recurring: boolean;
+  recurrence_frequency?: RecurrenceFrequency | null;
+  recurrence_end_date?: string | null;
   notes: string | null;
   created_at: string;
   updated_at: string;

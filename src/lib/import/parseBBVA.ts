@@ -119,6 +119,10 @@ export function parseBBVAExcel(file: ArrayBuffer): ParsedMovement[] {
   const worksheet = workbook.Sheets[sheetName];
   const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as (string | number | null)[][];
   
+  // Debug output
+  console.log("Excel rows:", data.length);
+  console.log("First rows:", data.slice(0, 7).map(r => r.slice(1, 6)));
+  
   const movements: ParsedMovement[] = [];
   
   // Find the header row dynamically
@@ -130,6 +134,7 @@ export function parseBBVAExcel(file: ArrayBuffer): ParsedMovement[] {
       break;
     }
   }
+  console.log("Header row index:", headerRowIndex);
   
   // Start parsing after header row
   const startIndex = headerRowIndex >= 0 ? headerRowIndex + 1 : 0;

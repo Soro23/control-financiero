@@ -226,6 +226,8 @@ export function MovementsTable({
             amount: editEntry.amount,
             date: editEntry.date,
             is_recurring: editEntry.is_recurring,
+            recurrence_frequency: editEntry.recurrence_frequency ?? undefined,
+            recurrence_end_date: editEntry.recurrence_end_date ?? undefined,
             notes: editEntry.notes,
             type: type,
           }}

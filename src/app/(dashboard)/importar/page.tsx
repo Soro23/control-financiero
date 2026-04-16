@@ -34,6 +34,11 @@ export default function ImportarPage() {
       const arrayBuffer = await file.arrayBuffer();
       const parsed = parseBBVAExcel(arrayBuffer);
       
+      // Debug: Log parsed data
+      console.log("File size:", arrayBuffer.byteLength);
+      console.log("Parsed movements:", parsed.length);
+      console.log("First 3:", parsed.slice(0, 3));
+      
       const withCategories: MovementWithCategory[] = parsed.map((m) => ({
         ...m,
         categoryId: "",

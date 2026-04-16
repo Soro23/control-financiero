@@ -405,7 +405,7 @@ export function MovementModal({
             </label>
 
             {isRecurring && (
-              <div className="pl-7">
+              <div className="pl-7 space-y-2">
                 <Select
                   value={watch("recurrence_frequency") || ""}
                   onValueChange={(v) => v && setValue("recurrence_frequency", v as RecurrenceFrequency)}
@@ -422,6 +422,15 @@ export function MovementModal({
                     <SelectItem value="yearly">Anual</SelectItem>
                   </SelectContent>
                 </Select>
+                <Input
+                  {...register("recurrence_end_date")}
+                  type="date"
+                  className="bg-surface-container-low border-none rounded-xl focus-visible:ring-primary/20 text-sm"
+                  min={watch("date")}
+                />
+                <p className="text-xs text-on-surface-variant">
+                  Deja vacío para repetir indefinidamente
+                </p>
               </div>
             )}
           </div>

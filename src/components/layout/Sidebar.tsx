@@ -85,40 +85,18 @@ export function Sidebar({ isOpen = false, onClose, onAlertsClick }: SidebarProps
             Nuevo Movimiento
           </button>
 
-          {/* Alerts & User footer */}
-          <div className="flex items-center gap-2 pt-3">
-            {/* Alerts button */}
-            <button
-              onClick={onAlertsClick}
-              className="relative p-3 rounded-xl hover:bg-surface-container-low transition-colors"
-              aria-label="Alertas"
-            >
-              <span className="material-symbols-outlined text-[22px] text-on-surface-variant">
-                notifications
-              </span>
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-error text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </span>
-              )}
-            </button>
-
-            {/* User initials & Settings */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => router.push("/configuracion")}
-                className="p-2 rounded-xl hover:bg-surface-container-low transition-colors"
-                aria-label="Configuración"
-              >
-                <span className="material-symbols-outlined text-[22px] text-on-surface-variant">
-                  settings
-                </span>
-              </button>
-              <div className="w-9 h-9 rounded-full bg-primary-fixed text-primary font-bold text-xs flex items-center justify-center">
-                {initials}
-              </div>
-            </div>
-          </div>
+          {/* User with settings link */}
+          <button
+            onClick={() => router.push("/configuracion")}
+            className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors text-left"
+          >
+            <span className="material-symbols-outlined text-[22px] text-on-surface-variant">
+              settings
+            </span>
+            <span className="text-sm text-on-surface truncate">
+              {name || emailDisplay}
+            </span>
+          </button>
         </div>
       </aside>
 

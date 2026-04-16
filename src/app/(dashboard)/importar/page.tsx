@@ -21,8 +21,6 @@ export default function ImportarPage() {
   const [movements, setMovements] = useState<MovementWithCategory[]>([]);
   const [importing, setImporting] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-  const [targetMonth, setTargetMonth] = useState<number>(new Date().getMonth() + 1);
-  const [targetYear, setTargetYear] = useState<number>(new Date().getFullYear());
   const [importType, setImportType] = useState<"expense" | "income" | "both">("expense");
   const [filterType, setFilterType] = useState<"expense" | "income" | "both">("expense");
   const [categories, setCategories] = useState<CategoryInfo[]>([]);
@@ -330,30 +328,6 @@ export default function ImportarPage() {
                 >
                   Ambos ({expenseCount + incomeCount})
                 </button>
-              </div>
-
-              <div className="flex gap-2 items-center">
-                <label className="text-sm text-on-surface-variant">Mes:</label>
-                <select
-                  value={targetMonth}
-                  onChange={(e) => setTargetMonth(Number(e.target.value))}
-                  className="bg-surface-container px-3 py-2 rounded-lg text-sm"
-                >
-                  {Array.from({ length: 12 }, (_, i) => (
-                    <option key={i + 1} value={i + 1}>
-                      {new Date(2000, i).toLocaleString("es", { month: "long" })}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={targetYear}
-                  onChange={(e) => setTargetYear(Number(e.target.value))}
-                  className="bg-surface-container px-3 py-2 rounded-lg text-sm"
-                >
-                  {[2024, 2025, 2026, 2027].map((y) => (
-                    <option key={y} value={y}>{y}</option>
-                  ))}
-                </select>
               </div>
             </div>
 

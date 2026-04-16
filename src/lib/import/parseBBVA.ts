@@ -120,23 +120,16 @@ export function parseBBVAExcel(file: ArrayBuffer): ParsedMovement[] {
   let sheetName = workbook.SheetNames[0];
   for (const name of workbook.SheetNames) {
     const ws = workbook.Sheets[name];
-    const data = XLSX.utils.sheet_to_json(ws, { header: 1 }) as (string | number | null)[][];
-    const hasImporte = data.some(row => row?.some(cell => String(cell ?? "").toLowerCase().includes("importe")));
+    const sheetData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as (string | number | null)[][];
+    const hasImporte = sheetData.some(row => row?.some(cell => String(cell ?? "").toLowerCase().includes("importe")));
     if (hasImporte) {
       sheetName = name;
       break;
     }
   }
   
-  console.log("Available sheets:", workbook.SheetNames);
-  console.log("Using sheet:", sheetName);
-  
   const worksheet = workbook.Sheets[sheetName];
   const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as (string | number | null)[][];
-  
-  // Debug output
-  console.log("Excel rows:", data.length, "cols:", data[5]?.length);
-  console.log("Sample row[5]:", data[5]);
   
   const movements: ParsedMovement[] = [];
   
@@ -149,7 +142,6 @@ export function parseBBVAExcel(file: ArrayBuffer): ParsedMovement[] {
       break;
     }
   }
-  console.log("Header row index:", headerRowIndex);
   
   // Start parsing after header row
   const startIndex = headerRowIndex >= 0 ? headerRowIndex + 1 : 0;

@@ -191,18 +191,20 @@ export default function ImportarPage() {
       </div>
 
       <div className="bg-surface-container-lowest rounded-2xl p-6 space-y-6">
-        <div className="border-2 border-dashed border-outline-variant rounded-xl p-8 text-center hover:bg-surface-container-low transition-colors">
-          <span className="material-symbols-outlined text-4xl text-on-surface-variant">upload_file</span>
-          <p className="mt-2 text-sm text-on-surface-variant">
-            Sube el archivo Excel de tu banco (BBVA)
-          </p>
+        <label className="block cursor-pointer">
+          <div className="border-2 border-dashed border-outline-variant rounded-xl p-8 text-center hover:bg-surface-container-low transition-colors">
+            <span className="material-symbols-outlined text-4xl text-on-surface-variant">upload_file</span>
+            <p className="mt-2 text-sm text-on-surface-variant">
+              Sube el archivo Excel de tu banco (BBVA)
+            </p>
+          </div>
           <input
             type="file"
             accept=".xlsx,.xls"
             onChange={handleFileUpload}
-            className="mt-4 mx-auto block text-sm"
+            className="hidden"
           />
-        </div>
+        </label>
 
         {movements.length > 0 && (
           <>

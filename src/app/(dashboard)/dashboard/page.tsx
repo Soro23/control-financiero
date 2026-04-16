@@ -13,7 +13,6 @@ import { useUserPreferences } from "@/hooks/useUserPreferences";
 import { useMonthlyHistory } from "@/hooks/useMonthlyHistory";
 import { calcularKPIs } from "@/lib/calculations/dashboard";
 import { calcularBloques } from "@/lib/calculations/rule503020";
-import { calcularTotalMes } from "@/lib/calculations/ingresos";
 import { calcularPorcentajePorCategoria } from "@/lib/calculations/gastos";
 import { formatCurrency, DEFAULT_PREFERENCES } from "@/lib/utils/formatCurrency";
 import { formatDate } from "@/lib/utils/formatDate";
@@ -55,23 +54,21 @@ export default function DashboardPage() {
     ? { month: 12, year: period.year - 1 }
     : { month: period.month - 1, year: period.year };
 
-  const { entries: ingresos, loading: loadingI } = useIngresos(period.year, period.month);
-  const { entries: gastos, loading: loadingG } = useGastos(period.year, period.month);
-  const { entries: ingresosAnterior } = useIngresos(prevMonth.year, prevMonth.month);
-  const { entries: gastosAnterior } = useGastos(prevMonth.year, prevMonth.month);
+  const { entries: ingresos, loading: loadingI, totalMes: totalIngresos } = useIngresos(period.year, period.month);
+  const { entries: gastos, loading: loadingG, totalMes: totalGastos } = useGastos(period.year, period.month);
+  const { totalMes: totalIngresosAnterior } = useIngresos(prevMonth.year, prevMonth.month);
+  const { totalMes: totalGastosAnterior } = useGastos(prevMonth.year, prevMonth.month);
   const { categories } = useCategories("expense");
   const { preferences } = useUserPreferences();
 
   const prefs = preferences ?? { ...DEFAULT_PREFERENCES, date_format: "DD/MM/YYYY" };
   const loading = loadingI || loadingG;
 
-  const kpis = calcularKPIs(ingresos, gastos, ingresosAnterior, gastosAnterior);
+  const kpis = calcularKPIs(totalIngresos, totalGastos, totalIngresosAnterior, totalGastosAnterior);
 
   const flatCategories: Category[] = categories.flatMap((c) => [c, ...(c.children ?? [])]);
-  const totalIngresos = calcularTotalMes(ingresos);
   const ruleBlocks = calcularBloques(totalIngresos, gastos, flatCategories);
   const categoryBreakdown = calcularPorcentajePorCategoria(gastos, flatCategories);
-  const totalGastos = calcularTotalMes(gastos);
 
   const { data: historyData, loading: loadingHistory } = useMonthlyHistory(period);
 

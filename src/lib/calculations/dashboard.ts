@@ -1,20 +1,20 @@
 import type { IncomeEntry, ExpenseEntry, DashboardKPIs } from "@/types";
-import { calcularTotalMes as totalIngresos, calcularVariacion as varIngresos } from "./ingresos";
-import { calcularTotalMes as totalGastos, calcularVariacion as varGastos } from "./gastos";
+import { calcularVariacion as varIngresos } from "./ingresos";
+import { calcularVariacion as varGastos } from "./gastos";
 
 export function calcularKPIs(
-  ingresos: IncomeEntry[],
-  gastos: ExpenseEntry[],
-  ingresosAnterior: IncomeEntry[],
-  gastosAnterior: ExpenseEntry[]
+  totalIngresos: number,
+  totalGastos: number,
+  totalIngresosAnterior: number,
+  totalGastosAnterior: number
 ): DashboardKPIs {
-  const ingresosMes = totalIngresos(ingresos);
-  const gastosMes = totalGastos(gastos);
+  const ingresosMes = totalIngresos;
+  const gastosMes = totalGastos;
   const ahorroGenerado = ingresosMes - gastosMes;
   const pctAhorro = ingresosMes > 0 ? (ahorroGenerado / ingresosMes) * 100 : 0;
 
-  const ingresosMesAnterior = totalIngresos(ingresosAnterior);
-  const gastosMesAnterior = totalGastos(gastosAnterior);
+  const ingresosMesAnterior = totalIngresosAnterior;
+  const gastosMesAnterior = totalGastosAnterior;
   const ahorroAnterior = ingresosMesAnterior - gastosMesAnterior;
 
   return {

@@ -60,22 +60,49 @@ export default function ImportarPage() {
       cats.push({ id: doc.id, name: doc.data().name });
     });
     setCategories(cats);
+    return cats;
   }, [importType]);
 
-  onAuthStateChanged(auth, (user) => {
-    setUserId(user?.uid ?? null);
-    if (user?.uid) {
-      loadCategories(user.uid);
-    }
-  });
+  const loadCategoriesForType = useCallback(async (uid: string, type: "expense" | "income") => {
+    const col = type === "expense" ? "expense_categories" : "income_categories";
+    const q = query(collection(db, "users", uid, col));
+    const snapshot = await getDocs(q);
+    const cats: CategoryInfo[] = [];
+    snapshot.forEach((doc) => {
+      cats.push({ id: doc.id, name: doc.data().name });
+    });
+    return cats;
+  }, []);
 
+  // Set up user auth listener
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUserId(user?.uid ?? null);
+    });
+    return unsubscribe;
+  }, []);
+
+  // Load categories when userId or importType changes
+  useEffect(() => {
+    if (!userId) return;
+    loadCategoriesForType(userId, importType).then((cats) => {
+      setCategories(cats);
+    });
+  }, [userId, importType]);
+
+  // Map movements to categories when both are available
   useEffect(() => {
     if (movements.length > 0 && categories.length > 0) {
       setMovements((prev) =>
         prev.map((m) => {
           if (m.categoryId) return m;
-          const catId = getCategoryId(m.categoriaSugerida);
-          return { ...m, categoryId: catId };
+          // Try to find matching category by name (fuzzy match)
+          const suggestedCat = categories.find(
+            (c) => c.name.toLowerCase() === m.categoriaSugerida.toLowerCase() ||
+                   m.categoriaSugerida.toLowerCase().includes(c.name.toLowerCase()) ||
+                   c.name.toLowerCase().includes(m.categoriaSugerida.toLowerCase())
+          );
+          return { ...m, categoryId: suggestedCat?.id || "" };
         })
       );
     }
@@ -88,7 +115,7 @@ export default function ImportarPage() {
   };
 
   const getCategoryId = (categoryName: string): string => {
-    const cat = categories.find((c) => c.name === categoryName);
+    const cat = categories.find((c) => c.name.toLowerCase() === categoryName.toLowerCase());
     return cat?.id || "";
   };
 

@@ -53,6 +53,7 @@ const movementSchema = z.object({
   date: z.string().min(1, "La fecha es obligatoria"),
   is_recurring: z.boolean(),
   recurrence_frequency: z.enum(["weekly", "biweekly", "monthly", "bimonthly", "quarterly", "yearly"]).optional(),
+  recurrence_end_date: z.string().optional(),
   notes: z.string().optional(),
 });
 
@@ -73,6 +74,7 @@ interface MovementModalProps {
     date: string;
     is_recurring: boolean;
     recurrence_frequency?: "weekly" | "biweekly" | "monthly" | "bimonthly" | "quarterly" | "yearly";
+    recurrence_end_date?: string | null;
     notes?: string | null;
     type: "income" | "expense";
   };
@@ -116,6 +118,7 @@ export function MovementModal({
       date: todayISO(),
       is_recurring: false,
       recurrence_frequency: undefined,
+      recurrence_end_date: "",
       notes: "",
     },
   });
@@ -154,6 +157,7 @@ export function MovementModal({
         date: defaultEntry.date,
         is_recurring: defaultEntry.is_recurring,
         recurrence_frequency: defaultEntry.recurrence_frequency,
+        recurrence_end_date: defaultEntry.recurrence_end_date || "",
         notes: defaultEntry.notes || "",
       });
     } else {
@@ -165,6 +169,7 @@ export function MovementModal({
         date: todayISO(),
         is_recurring: false,
         recurrence_frequency: undefined,
+        recurrence_end_date: "",
         notes: "",
       });
     }
@@ -214,6 +219,7 @@ export function MovementModal({
       amount,
       is_recurring: values.is_recurring,
       recurrence_frequency: values.is_recurring ? values.recurrence_frequency : null,
+      recurrence_end_date: values.is_recurring ? (values.recurrence_end_date || null) : null,
       notes: values.notes || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -241,7 +247,8 @@ export function MovementModal({
             values.date,
             values.recurrence_frequency,
             userId,
-            collectionName as "income_entries" | "expense_entries"
+            collectionName as "income_entries" | "expense_entries",
+            values.recurrence_end_date || null
           );
         }
         

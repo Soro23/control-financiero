@@ -121,7 +121,20 @@ export function parseBBVAExcel(file: ArrayBuffer): ParsedMovement[] {
   
   const movements: ParsedMovement[] = [];
   
-  for (let i = 5; i < data.length; i++) {
+  // Find the header row dynamically
+  let headerRowIndex = -1;
+  for (let i = 0; i < Math.min(data.length, 10); i++) {
+    const row = data[i];
+    if (row && row.some((cell) => String(cell ?? "").toLowerCase().includes("importe"))) {
+      headerRowIndex = i;
+      break;
+    }
+  }
+  
+  // Start parsing after header row
+  const startIndex = headerRowIndex >= 0 ? headerRowIndex + 1 : 0;
+  
+  for (let i = startIndex; i < data.length; i++) {
     const row = data[i];
     if (!row || row.length < 6) continue;
     
@@ -130,20 +143,22 @@ export function parseBBVAExcel(file: ArrayBuffer): ParsedMovement[] {
     const colD = String(row[3] ?? "").trim();
     const colE = String(row[4] ?? "").trim();
     const colF = row[5];
-    const colJ = String(row[9] ?? "").trim();
+    const colJ = row[9] ? String(row[9]).trim() : "";
     
+    // Skip header rows and empty rows
     if (!colF || typeof colF !== "number") continue;
+    if (colB.toLowerCase() === "importe" || colD.toLowerCase() === "concepto") continue;
     
     const isIncome = colF > 0;
     const { category, subcategory } = findMatchingCategory(colD, colJ, isIncome);
     
     let fechaFormateada: string;
-    if (colB && typeof colB === "string" && colB.includes("/")) {
+    if (colB && colB.includes("/")) {
       fechaFormateada = colB;
-    } else if (colC && typeof colC === "string" && colC.includes("/")) {
+    } else if (colC && colC.includes("/")) {
       fechaFormateada = colC;
     } else {
-      fechaFormateada = String(colB || colC || "");
+      fechaFormateada = colB || colC || "";
     }
     
     movements.push({

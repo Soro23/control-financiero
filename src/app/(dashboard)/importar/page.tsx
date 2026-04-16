@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase/client";
 import { parseBBVAExcel, type ParsedMovement, generateMovementHash } from "@/lib/import/parseBBVA";
@@ -11,11 +11,14 @@ import { formatCurrency, DEFAULT_PREFERENCES } from "@/lib/utils/formatCurrency"
 interface CategoryInfo {
   id: string;
   name: string;
-  subcategories?: { id: string; name: string }[];
+}
+
+interface MovementWithCategory extends ParsedMovement {
+  categoryId: string;
 }
 
 export default function ImportarPage() {
-  const [movements, setMovements] = useState<ParsedMovement[]>([]);
+  const [movements, setMovements] = useState<MovementWithCategory[]>([]);
   const [importing, setImporting] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [targetMonth, setTargetMonth] = useState<number>(new Date().getMonth() + 1);
@@ -30,7 +33,12 @@ export default function ImportarPage() {
     try {
       const arrayBuffer = await file.arrayBuffer();
       const parsed = parseBBVAExcel(arrayBuffer);
-      setMovements(parsed);
+      
+      const withCategories: MovementWithCategory[] = parsed.map((m) => ({
+        ...m,
+        categoryId: "",
+      }));
+      setMovements(withCategories);
       toast.success(`${parsed.length} movimientos detectados`);
     } catch (error) {
       console.error("Error parsing file:", error);
@@ -44,7 +52,7 @@ export default function ImportarPage() {
     const snapshot = await getDocs(q);
     const cats: CategoryInfo[] = [];
     snapshot.forEach((doc) => {
-      cats.push({ id: doc.id, name: doc.data().name, subcategories: undefined });
+      cats.push({ id: doc.id, name: doc.data().name });
     });
     setCategories(cats);
   }, [importType]);
@@ -56,8 +64,26 @@ export default function ImportarPage() {
     }
   });
 
+  useEffect(() => {
+    if (movements.length > 0 && categories.length > 0) {
+      setMovements((prev) =>
+        prev.map((m) => {
+          if (m.categoryId) return m;
+          const catId = getCategoryId(m.categoriaSugerida);
+          return { ...m, categoryId: catId };
+        })
+      );
+    }
+  }, [categories, movements.length]);
+
+  const updateMovementCategory = (index: number, categoryId: string) => {
+    setMovements((prev) =>
+      prev.map((m, i) => (i === index ? { ...m, categoryId } : m))
+    );
+  };
+
   const getCategoryId = (categoryName: string): string => {
-    const cat = categories.find(c => c.name === categoryName);
+    const cat = categories.find((c) => c.name === categoryName);
     return cat?.id || "";
   };
 
@@ -94,7 +120,7 @@ export default function ImportarPage() {
         fechaISO = new Date().toISOString().split("T")[0];
       }
 
-      const categoryId = getCategoryId(m.categoriaSugerida);
+      const categoryId = m.categoryId || getCategoryId(m.categoriaSugerida);
 
       try {
         await addDoc(collection(db, "users", userId, col), {
@@ -238,9 +264,18 @@ export default function ImportarPage() {
                     </span>
                     <span className="w-20 text-on-surface-variant">{m.fecha}</span>
                     <span className="flex-1 truncate">{m.concepto}</span>
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-                      {m.categoriaSugerida}
-                    </span>
+                    <select
+                      value={m.categoryId || getCategoryId(m.categoriaSugerida)}
+                      onChange={(e) => updateMovementCategory(i, e.target.value)}
+                      className="text-xs bg-surface-container-lowest px-2 py-1 rounded border border-outline-variant/20"
+                    >
+                      <option value="">Sin categoría</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 ))}
                 {movements.length > 20 && (

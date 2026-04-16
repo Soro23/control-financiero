@@ -63,12 +63,16 @@ export interface ExpenseEntry {
 
 // ─── Forms ───────────────────────────────────────────────────
 
+export type RecurrenceFrequency = "weekly" | "biweekly" | "monthly" | "bimonthly" | "quarterly" | "yearly";
+
 export interface IncomeFormData {
   concept: string;
   category_id: string;
   amount: number;
   date: string;
   is_recurring: boolean;
+  recurrence_frequency?: RecurrenceFrequency | null;
+  recurrence_end_date?: string | null;
   notes?: string;
 }
 
@@ -79,6 +83,8 @@ export interface ExpenseFormData {
   amount: number;
   date: string;
   is_recurring: boolean;
+  recurrence_frequency?: RecurrenceFrequency | null;
+  recurrence_end_date?: string | null;
   notes?: string;
 }
 

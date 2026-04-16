@@ -38,16 +38,19 @@ export function advanceDate(dateStr: string, frequency: RecurrenceFrequency): st
 
 /**
  * Returns every date at which a recurring entry should appear,
- * starting from originDate and going up to (and including) maxDate.
+ * starting from originDate and going up to (and including) min(maxDate, endDate).
+ * If endDate is provided and is earlier than maxDate, stops at endDate.
  */
 export function getExpectedDates(
   originDate: string,
   frequency: RecurrenceFrequency,
-  maxDate: string
+  maxDate: string,
+  endDate?: string | null
 ): string[] {
   const dates: string[] = [];
   let current = originDate;
-  while (current <= maxDate) {
+  const effectiveEnd = endDate && endDate < maxDate ? endDate : maxDate;
+  while (current <= effectiveEnd) {
     dates.push(current);
     current = advanceDate(current, frequency);
   }

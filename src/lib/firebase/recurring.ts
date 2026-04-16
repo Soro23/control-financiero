@@ -24,6 +24,7 @@ interface RecurringSnapshot {
   amount: number;
   is_recurring: boolean;
   recurrence_frequency: RecurrenceFrequency;
+  recurrence_end_date?: string | null;
   notes: string | null;
   date: string;
 }
@@ -88,10 +89,17 @@ export async function backfillRecurringEntries(
   const toCreate: RecurringSnapshot[] = [];
 
   for (const series of seriesMap.values()) {
+    const endDate = series.sample.recurrence_end_date;
+    
+    if (endDate && endDate < today) {
+      continue;
+    }
+
     const expected = getExpectedDates(
       series.origin,
       series.sample.recurrence_frequency,
-      today
+      today,
+      series.sample.recurrence_end_date
     );
 
     for (const date of expected) {
@@ -118,7 +126,7 @@ export async function backfillRecurringEntries(
 }
 
 /**
- * Generates recurring entries from the day AFTER startDate up to today.
+ * Generates recurring entries from the day AFTER startDate up to today (or endDate).
  * Call this after creating the initial entry so the current occurrence
  * is not duplicated.
  *
@@ -131,15 +139,17 @@ export async function createForwardRecurringEntries(
   startDate: string,
   frequency: RecurrenceFrequency,
   userId: string,
-  collectionName: CollectionName
+  collectionName: CollectionName,
+  endDate?: string | null
 ): Promise<void> {
   const today = new Date().toISOString().split("T")[0];
+  const effectiveEnd = endDate && endDate < today ? endDate : today;
   const entries: Record<string, unknown>[] = [];
 
   // Start from the NEXT occurrence (startDate was already created)
   let current = advanceDate(startDate, frequency);
 
-  while (current <= today) {
+  while (current <= effectiveEnd) {
     entries.push({ ...baseData, date: current });
     current = advanceDate(current, frequency);
   }

@@ -10,6 +10,8 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  writeBatch,
+  limit,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase/client";
@@ -39,7 +41,8 @@ export function useCategoryMutations(onMutate?: () => void) {
     const q = query(
       collection(db, "users", userId, "categories"),
       where("type", "==", type),
-      where("parent_id", "==", parentId ?? null)
+      where("parent_id", "==", parentId ?? null),
+      limit(100)
     );
     const snap = await getDocs(q);
     
@@ -99,16 +102,17 @@ export function useCategoryMutations(onMutate?: () => void) {
       // Check if has children
       const childrenQuery = query(
         collection(db, "users", userId, "categories"),
-        where("parent_id", "==", id)
+        where("parent_id", "==", id),
+        limit(50)
       );
       const childrenSnap = await getDocs(childrenQuery);
       
-      // Delete children first
-      const childBatch = childrenSnap.docs.map(d => deleteDoc(doc(db, "users", userId, "categories", d.id)));
-      await Promise.all(childBatch);
-      
-      // Delete the category itself
-      await deleteDoc(doc(db, "users", userId, "categories", id));
+      const batch = writeBatch(db);
+      childrenSnap.docs.forEach(d => {
+        batch.delete(doc(db, "users", userId, "categories", d.id));
+      });
+      batch.delete(doc(db, "users", userId, "categories", id));
+      await batch.commit();
       onMutate?.();
       return true;
     } catch {

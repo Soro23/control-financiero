@@ -6,6 +6,7 @@ import {
   query,
   where,
   orderBy,
+  limit,
   getDocs,
   addDoc,
   updateDoc,
@@ -48,11 +49,18 @@ export function useGastos(year: number, month: number) {
       collection(db, "users", userId, "expense_entries"),
       where("date", ">=", from),
       where("date", "<=", to),
-      orderBy("date", "desc")
+      orderBy("date", "desc"),
+      limit(500)
     );
     const snap = await getDocs(entriesQuery);
 
-    const catsSnap = await getDocs(collection(db, "users", userId, "categories"));
+    const catsSnap = await getDocs(
+      query(
+        collection(db, "users", userId, "categories"),
+        where("type", "==", "expense"),
+        limit(100)
+      )
+    );
     const catsMap = Object.fromEntries(catsSnap.docs.map((d) => [d.id, { id: d.id, ...d.data() }]));
 
     const result: ExpenseEntry[] = snap.docs.map((d) => {

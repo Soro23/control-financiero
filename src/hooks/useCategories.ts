@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import { collection, query, where, getDocs, orderBy, limit } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase/client";
 import type { CategoryWithChildren } from "@/types";
@@ -24,7 +24,8 @@ export function useCategories(type: "income" | "expense") {
         collection(db, "users", userId, "categories"),
         where("type", "==", type),
         where("is_active", "==", true),
-        orderBy("sort_order")
+        orderBy("sort_order"),
+        limit(100)
       );
       const snap = await getDocs(q);
 

@@ -10,6 +10,7 @@ import {
   doc,
   query,
   orderBy,
+  limit,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase/client";
@@ -33,7 +34,8 @@ export function useObjetivos() {
 
     const q = query(
       collection(db, "users", userId, "saving_goals"),
-      orderBy("created_at", "asc")
+      orderBy("created_at", "asc"),
+      limit(5)
     );
     const snap = await getDocs(q);
 

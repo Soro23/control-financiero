@@ -6,6 +6,7 @@ import {
   query,
   where,
   orderBy,
+  limit,
   getDocs,
   addDoc,
   updateDoc,
@@ -44,17 +45,24 @@ export function useIngresos(year: number, month: number) {
 
     const { from, to } = dateRange(year, month);
 
-    // Fetch entries
+    // Fetch entries with limit
     const entriesQuery = query(
       collection(db, "users", userId, "income_entries"),
       where("date", ">=", from),
       where("date", "<=", to),
-      orderBy("date", "desc")
+      orderBy("date", "desc"),
+      limit(500)
     );
     const snap = await getDocs(entriesQuery);
 
-    // Fetch categories para join manual
-    const catsSnap = await getDocs(collection(db, "users", userId, "categories"));
+    // Fetch categories with limit
+    const catsSnap = await getDocs(
+      query(
+        collection(db, "users", userId, "categories"),
+        where("type", "==", "income"),
+        limit(100)
+      )
+    );
     const catsMap = Object.fromEntries(catsSnap.docs.map((d) => [d.id, { id: d.id, ...d.data() }]));
 
     const result: IncomeEntry[] = snap.docs.map((d) => {

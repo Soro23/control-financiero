@@ -13,7 +13,7 @@
  * The function is idempotent: calling it multiple times never creates duplicates.
  */
 
-import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, writeBatch, doc } from "firebase/firestore";
 import { db } from "./client";
 import { advanceDate, getExpectedDates, type RecurrenceFrequency } from "@/lib/utils/recurring";
 
@@ -103,15 +103,16 @@ export async function backfillRecurringEntries(
 
   if (toCreate.length === 0) return false;
 
-  await Promise.all(
-    toCreate.map((entry) =>
-      addDoc(collection(db, "users", userId, collectionName), {
-        ...entry,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-    )
-  );
+  const batch = writeBatch(db);
+  for (const entry of toCreate) {
+    const ref = doc(collection(db, "users", userId, collectionName));
+    batch.set(ref, {
+      ...entry,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+  }
+  await batch.commit();
 
   return true;
 }
@@ -144,8 +145,11 @@ export async function createForwardRecurringEntries(
   }
 
   if (entries.length > 0) {
-    await Promise.all(
-      entries.map((e) => addDoc(collection(db, "users", userId, collectionName), e))
-    );
+    const batch = writeBatch(db);
+    for (const e of entries) {
+      const ref = doc(collection(db, "users", userId, collectionName));
+      batch.set(ref, e);
+    }
+    await batch.commit();
   }
 }

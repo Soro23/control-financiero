@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { collection, query, where, orderBy, getDocs } from "firebase/firestore";
+import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase/client";
 import type { MonthYear } from "@/types";
@@ -42,7 +42,8 @@ async function fetchMonthTotal(
     collection(db_instance, "users", userId, collection_name),
     where("date", ">=", from),
     where("date", "<=", to),
-    orderBy("date")
+    orderBy("date"),
+    limit(100)
   );
   const snap = await getDocs(q);
   return snap.docs.reduce((s, d) => s + (d.data().amount as number), 0);
